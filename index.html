@@ -254,8 +254,15 @@ tbody tr:hover{background:var(--s2)}
 tbody tr.expanded-row{background:rgba(255,61,95,.03)}
 tbody td{padding:7px 9px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .exp-row{background:var(--s2);border-bottom:1px solid var(--border)}
-.exp-inner{padding:13px 15px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.exp-inner{padding:13px 15px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.exp-inner.counter-win{background:rgba(0,217,139,.03)}
+.exp-inner.counter-loss{background:rgba(255,61,95,.03)}
 .exp-sec-title{font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.mfe-mae-bar{height:8px;background:var(--s4);border-radius:4px;overflow:hidden;margin:6px 0 2px;display:flex}
+.mfe-segment{height:100%;background:var(--green);border-radius:4px 0 0 4px;transition:width .3s}
+.mae-segment{height:100%;background:var(--red);border-radius:0 4px 4px 0;transition:width .3s}
+.bar-labels{display:flex;justify-content:space-between;font-size:8px;margin-bottom:6px}
+.efficiency-ring{display:inline-flex;align-items:center;gap:5px;font-size:11px}
 .exp-row-item{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
 .exp-key{color:var(--muted)}
 .exp-acts{display:flex;gap:6px;margin-top:8px;grid-column:1/-1;flex-wrap:wrap}
@@ -857,6 +864,44 @@ textarea.minput{resize:none;height:65px}
       <div class="help-card">
         <div class="help-term">Conviction <span class="help-badge hb-purple">1–5</span></div>
         <div class="help-def">How strongly your gut felt about the trade at entry. <strong>1 = weak feeling</strong>, 5 = extremely certain. Tracked over time to see if high-conviction gut feelings lose more often — which would mean the counter trade wins more on those.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">⬡</span> ADVANCED TRADE STATS (Journal Expand)</div>
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-term">Drawdown % <span class="help-badge hb-red">Risk</span></div>
+        <div class="help-def">MAE expressed as a percentage of your entry price. <strong>Example: entry at 4500, MAE = -9pts = 0.2% drawdown.</strong> Useful for comparing drawdown severity across different assets and price levels.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Time in Drawdown <span class="help-badge hb-red">Duration</span></div>
+        <div class="help-def">Approximate time the counter trade spent below entry (in losing territory). Estimated from total duration × MAE ratio. <strong>Long drawdown time = painful hold.</strong> Suggests your SL may be too loose or entry timing is off.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Efficiency % <span class="help-badge hb-amber">Quality</span></div>
+        <div class="help-def">How much of the available profit (MFE) you captured at exit.<br><strong>100%</strong> = exited exactly at the best point.<br><strong>50%</strong> = left half the move on the table.<br><strong>Negative</strong> = you gave back all profit and closed at a loss after being up.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Edge Ratio <span class="help-badge hb-green">MFE ÷ MAE</span></div>
+        <div class="help-def">MFE divided by MAE. <strong>Above 1.0</strong> = price moved further in your favor than against — the trade had positive edge. <strong>Below 1.0</strong> = the trade fought you more than it rewarded you. A consistently low edge ratio means your entries are poorly timed.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Counter Edge <span class="help-badge hb-green">Delta</span></div>
+        <div class="help-def">Net point difference between the counter trade P&L and your original direction P&L. <strong>Positive</strong> = being flipped was better than following your gut. <strong>Negative</strong> = your gut was right this time. Over many trades this shows the average advantage of fading yourself.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">MFE/MAE Bar <span class="help-badge hb-muted">Visual</span></div>
+        <div class="help-def">Horizontal bar showing what % of total price movement went <span style="color:var(--green)">in the counter's favor (green)</span> vs <span style="color:var(--red)">against it (red)</span>. A mostly green bar = the trade worked cleanly. Mostly red = price fought the counter throughout.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Lesson Panel <span class="help-badge hb-purple">Auto</span></div>
+        <div class="help-def">Automatically generated observations based on your trade data. Flags patterns like: early exit, deep drawdown with no SL, high conviction + loss (gut trap), gave back profit. <strong>Read these — they compound into pattern recognition over time.</strong></div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Row Color <span class="help-badge hb-muted">Visual</span></div>
+        <div class="help-def">Expanded rows have a subtle <span style="color:var(--green)">green tint</span> when the counter trade won and a <span style="color:var(--red)">red tint</span> when it lost. Instant visual context without reading every cell.</div>
       </div>
     </div>
   </div>
@@ -1609,6 +1654,45 @@ function renderPositions(){
 // ══════════════════════════════════════════════════════════════════════════════
 // RENDER: JOURNAL
 // ══════════════════════════════════════════════════════════════════════════════
+// ── ADVANCED STAT CALCULATORS ────────────────────────────────────────────────
+function calcDrawdownPct(t){
+  // MAE as % of entry price — how deep did it go against the counter
+  if(t.mae==null||t.entry==null||t.entry===0)return null;
+  return Math.abs(t.mae/t.entry*100);
+}
+function calcEfficiency(t){
+  // What % of the available move (MFE) did we capture at exit
+  // 100% = perfect exit at MFE, negative = gave back profit
+  if(t.mfe==null||t.mfe===0)return null;
+  const pts=calcClosedPts(t);if(pts==null)return null;
+  return Math.min(100,Math.max(-100,(pts/t.mfe)*100));
+}
+function calcEdgeRatio(t){
+  // MFE ÷ MAE — above 1.0 means price rewarded you more than it punished you
+  if(t.mfe==null||t.mae==null||t.mae===0)return null;
+  return Math.abs(t.mfe/t.mae);
+}
+function calcCounterDelta(t){
+  // Counter P&L minus Your P&L — net advantage of being flipped
+  const cpts=calcClosedPts(t);
+  const ypts=calcYourClosedPts(t);
+  if(cpts==null||ypts==null)return null;
+  return cpts-ypts;
+}
+function calcDrawdownDuration(t){
+  // We track this via MAE — if MAE is negative the counter was in drawdown
+  // Approximate from total duration and MAE ratio
+  if(!t.openedAt||!t.closedAt||t.mfe==null||t.mae==null)return null;
+  const total=t.closedAt-t.openedAt;
+  const mfeAbs=Math.abs(t.mfe||0),maeAbs=Math.abs(t.mae||0);
+  const total2=mfeAbs+maeAbs;if(!total2)return null;
+  const drawdownRatio=maeAbs/total2;
+  const ddMs=total*drawdownRatio;
+  const h=Math.floor(ddMs/3600000),m=Math.floor((ddMs%3600000)/60000);
+  if(h>0)return h+'h '+m+'m in drawdown';
+  return m+'m in drawdown';
+}
+
 function renderJournal(){
   const mkt=document.getElementById('jf-mkt').value;
   const res=document.getElementById('jf-res').value;
@@ -1673,7 +1757,22 @@ function renderJournal(){
     // Expanded detail row
     if(expandedId===t.id){
       const expTr=document.createElement('tr');expTr.className='exp-row';
-      expTr.innerHTML=`<td colspan="23"><div class="exp-inner">
+      // Advanced stats
+      const ddPct=calcDrawdownPct(t);
+      const eff=calcEfficiency(t);
+      const edge=calcEdgeRatio(t);
+      const delta=calcCounterDelta(t);
+      const ddDur=calcDrawdownDuration(t);
+      const mfeAbs=Math.abs(t.mfe||0),maeAbs=Math.abs(t.mae||0);
+      const totalMove=mfeAbs+maeAbs||1;
+      const mfePct=Math.round(mfeAbs/totalMove*100);
+      const maePct=Math.round(maeAbs/totalMove*100);
+      const isWin=t.result==='WIN'||t.result==='TP';
+      const isLoss=t.result==='LOSS'||t.result==='SL';
+      const bgCls=isWin?'counter-win':isLoss?'counter-loss':'';
+
+      expTr.innerHTML=`<td colspan="23"><div class="exp-inner ${bgCls}">
+        <!-- COL 1: TRADE DETAILS -->
         <div>
           <div class="exp-sec-title">Trade Details</div>
           <div class="exp-row-item"><span class="exp-key">Order Type</span><span><span class="otype o${t.orderType}">${t.orderType}</span></span></div>
@@ -1682,8 +1781,13 @@ function renderJournal(){
           <div class="exp-row-item"><span class="exp-key">Duration</span><span>${durStr(t)}</span></div>
           <div class="exp-row-item"><span class="exp-key">You Said</span><span style="color:var(--muted)">${t.youSaid}</span></div>
           <div class="exp-row-item"><span class="exp-key">Counter</span><span style="color:var(--red);font-weight:500">${t.counter}</span></div>
-          ${t.orderType==='TRAIL'?`<div class="exp-row-item"><span class="exp-key">Trail Dist</span><span style="color:var(--purple)">${t.trailDist} ${t.trailUnit}</span></div><div class="exp-row-item"><span class="exp-key">Trail Stop</span><span style="color:var(--purple)">${t.trailStop?fmtP(t.trailStop,t.sym):'—'}</span></div>`:''}
+          <div class="exp-row-item"><span class="exp-key">Conviction</span><span>${CONV[t.conviction]||t.conviction}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Reason</span><span>${t.reason}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Note</span><span style="color:var(--muted);font-style:italic">${t.note||'—'}</span></div>
+          ${t.orderType==='TRAIL'?`<div class="exp-row-item"><span class="exp-key">Trail Dist</span><span style="color:var(--purple)">${t.trailDist} ${t.trailUnit}</span></div>`:''}
         </div>
+
+        <!-- COL 2: PRICE & P&L -->
         <div>
           <div class="exp-sec-title">Price & P&L</div>
           <div class="exp-row-item"><span class="exp-key">Entry</span><span>${t.entry!=null?fmtP(t.entry,t.sym):'Pending'}</span></div>
@@ -1694,16 +1798,67 @@ function renderJournal(){
           <div class="exp-row-item"><span class="exp-key">Counter P&L pts</span><span class="${counterPts!=null&&counterPts>=0?'cg':counterPts!=null?'cr':''}">${fmtPts(counterPts,t.sym)}</span></div>
           <div class="exp-row-item"><span class="exp-key">Counter P&L $</span><span class="${counterUsd!=null&&counterUsd>=0?'cg':counterUsd!=null?'cr':''}">${fmtUsd(counterUsd)}</span></div>
           <div class="exp-row-item"><span class="exp-key">Planned R:R</span><span class="ca">${calcRR(t)||'—'}</span></div>
-          <div class="exp-row-item"><span class="exp-key">Actual R:R</span><span class="${calcActualRR(t)?'cg':'cr'}">${calcActualRR(t)||'—'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Actual R:R</span><span class="${calcActualRR(t)&&parseFloat(calcActualRR(t).split(':')[1])>=1?'cg':'cr'}">${calcActualRR(t)||'—'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Counter vs You</span><span class="${delta!=null&&delta>=0?'cg':delta!=null?'cr':''}">
+            ${delta!=null?(delta>=0?'Counter +':('Counter '))+Math.abs(delta).toFixed(2)+'pts better':'—'}
+          </span></div>
         </div>
+
+        <!-- COL 3: MOVE ANALYSIS -->
         <div>
-          <div class="exp-sec-title">Performance</div>
-          <div class="exp-row-item"><span class="exp-key">Best move (MFE)</span><span class="cg">${t.mfe!=null?fmtPts(t.mfe,t.sym):'—'}</span></div>
-          <div class="exp-row-item"><span class="exp-key">Worst move (MAE)</span><span class="cr">${t.mae!=null?fmtPts(t.mae,t.sym):'—'}</span></div>
-          <div class="exp-row-item"><span class="exp-key">Price favored</span><span>${favor?`<span class="${favor==='bull'?'cg':'cr'}">${favor==='bull'?'▲ Bullish':'▼ Bearish'}</span>`:'—'}</span></div>
-          <div class="exp-row-item"><span class="exp-key">Conviction</span><span>${CONV[t.conviction]||t.conviction}</span></div>
-          <div class="exp-row-item"><span class="exp-key">Reason</span><span>${t.reason}</span></div>
-          <div class="exp-row-item"><span class="exp-key">Note</span><span style="color:var(--muted);font-style:italic">${t.note||'None — click to add'}</span></div>
+          <div class="exp-sec-title">Move Analysis</div>
+          <div class="exp-row-item"><span class="exp-key" data-tip="Furthest the counter moved in your favor while open">Best (MFE)</span><span class="cg">${t.mfe!=null?fmtPts(t.mfe,t.sym):'—'}</span></div>
+          <div class="exp-row-item"><span class="exp-key" data-tip="Furthest price moved against the counter trade while open">Worst (MAE)</span><span class="cr">${t.mae!=null?fmtPts(t.mae,t.sym):'—'}</span></div>
+          <div class="exp-row-item"><span class="exp-key" data-tip="MAE as % of entry price — how deep the drawdown was relative to price level">Drawdown %</span><span class="cr">${ddPct!=null?ddPct.toFixed(3)+'%':'—'}</span></div>
+          <div class="exp-row-item"><span class="exp-key" data-tip="Approx time the counter trade spent in negative territory">Time in DD</span><span style="color:var(--muted)">${ddDur||'—'}</span></div>
+          <div class="exp-row-item"><span class="exp-key" data-tip="Which direction price moved more during the trade">Price favored</span><span>${favor?`<span class="${favor==='bull'?'cg':'cr'}">${favor==='bull'?'▲ Bullish':'▼ Bearish'}</span>`:'—'}</span></div>
+          <div style="margin-top:8px">
+            <div class="bar-labels">
+              <span style="color:var(--green);font-size:8px">▲ Favor ${mfePct}%</span>
+              <span style="color:var(--red);font-size:8px">${maePct}% Adverse ▼</span>
+            </div>
+            <div class="mfe-mae-bar" data-tip="Green = % of total move that went in counter's favor. Red = % that went against.">
+              <div class="mfe-segment" style="width:${mfePct}%"></div>
+              <div class="mae-segment" style="width:${maePct}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 4: QUALITY SCORES -->
+        <div>
+          <div class="exp-sec-title">Trade Quality</div>
+          <div class="exp-row-item">
+            <span class="exp-key" data-tip="How much of the available profit (MFE) was captured at exit. 100% = perfect exit. Negative = gave back profit.">Efficiency</span>
+            <span class="${eff!=null&&eff>=70?'cg':eff!=null&&eff>=30?'ca':'cr'}">${eff!=null?eff.toFixed(0)+'%':'—'}</span>
+          </div>
+          <div class="exp-row-item">
+            <span class="exp-key" data-tip="MFE ÷ MAE. Above 1.0 = price rewarded you more than it punished you. Below 1.0 = trade fought you more than it paid.">Edge Ratio</span>
+            <span class="${edge!=null&&edge>=1?'cg':'cr'}">${edge!=null?edge.toFixed(2):' —'}</span>
+          </div>
+          <div class="exp-row-item">
+            <span class="exp-key" data-tip="Net pts advantage of being in the counter trade vs your original direction">Counter Edge</span>
+            <span class="${delta!=null&&delta>=0?'cg':'cr'}">${delta!=null?(delta>=0?'+':'')+delta.toFixed(2)+'pts':'—'}</span>
+          </div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">
+            <div style="font-size:8px;color:var(--muted);letter-spacing:.08em;margin-bottom:6px">LESSON</div>
+            <div style="font-size:10px;color:var(--text);line-height:1.7">
+              ${(()=>{
+                if(t.result==='OPEN'||t.result==='PENDING') return '<span style="color:var(--amber)">Trade still active.</span>';
+                const lessons=[];
+                if(eff!=null&&eff<30) lessons.push('Exited too early — left <strong>'+Math.round(t.mfe-calcClosedPts(t))+'pts</strong> on table.');
+                if(eff!=null&&eff<0) lessons.push('Gave back all profit — tighten trailing stop.');
+                if(edge!=null&&edge<0.5) lessons.push('Price fought this trade hard — entry timing may be off.');
+                if(edge!=null&&edge>=2) lessons.push('Strong edge — price moved cleanly in counter direction.');
+                if(ddPct!=null&&ddPct>0.5) lessons.push('Deep drawdown ('+ddPct.toFixed(2)+'%) — SL may be too loose or missing.');
+                if(t.conviction>=4&&isLoss) lessons.push('High conviction ('+t.conviction+'/5) + loss — classic gut trap.');
+                if(t.conviction>=4&&isWin) lessons.push('High conviction + counter win — flip instinct confirmed.');
+                if(!t.sl&&isLoss) lessons.push('No SL set — consider adding a stop next time.');
+                if(isWin&&!t.tp) lessons.push('Counter won without a TP set — define targets next time.');
+                return lessons.length?lessons.map(l=>'<div style="margin-bottom:3px">· '+l+'</div>').join(''):
+                  '<span style="color:var(--muted)">No patterns flagged.</span>';
+              })()}
+            </div>
+          </div>
           <div class="exp-acts">
             ${t.result==='OPEN'?`<button class="ea win" onclick="openExitModal('${t.id}')">Close Trade</button>`:''}
             ${t.result!=='OPEN'?`<button class="ea open" onclick="reopenTrade('${t.id}')">Re-Open</button>`:''}
