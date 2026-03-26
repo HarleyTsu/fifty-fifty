@@ -341,7 +341,9 @@ textarea.minput{resize:none;height:65px}
 .chart-list-title{font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
 .chart-trade-card{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .12s;border-left:3px solid var(--border)}
 .chart-trade-card:hover{background:var(--s3);border-color:var(--border2)}
-.chart-trade-card.selected{background:var(--s3);border-left-color:var(--red)}
+.chart-trade-card.selected{background:#1f1f2e;border-color:var(--border2);border-left-color:var(--red);box-shadow:0 0 0 1px rgba(255,61,95,.2)}
+.chart-trade-card.selected .ctc-asset{color:#fff}
+.chart-trade-card.selected .ctc-meta{color:#9a9ab0}
 .chart-trade-card.win-card{border-left-color:var(--green)}
 .chart-trade-card.loss-card{border-left-color:var(--red)}
 .chart-trade-card.open-card-c{border-left-color:var(--amber)}
@@ -349,7 +351,8 @@ textarea.minput{resize:none;height:65px}
 .ctc-meta{font-size:9px;color:var(--muted);margin-top:2px}
 .ctc-pnl{font-size:11px;font-weight:500;margin-top:3px}
 .chart-main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.chart-toolbar{background:var(--s1);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.chart-toolbar{background:var(--s1);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chart-legend-bar{background:var(--s2);border-bottom:1px solid var(--border);padding:5px 16px;display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:wrap}
 .chart-asset-name{font-size:13px;font-weight:500;color:#fff}
 .chart-asset-price{font-size:12px;color:var(--green);font-variant-numeric:tabular-nums}
 .tf-btns{display:flex;gap:4px;margin-left:auto}
@@ -1680,7 +1683,6 @@ setInterval(()=>{renderOpenPanel();renderStats();updateLiveBadge();},60000);
           <div class="chart-asset-name" id="chart-asset-name">—</div>
           <div class="chart-asset-price" id="chart-asset-price">—</div>
         </div>
-        <div class="legend-row" id="chart-legend"></div>
         <div class="tf-btns">
           <button class="tf-btn" onclick="setChartTF('1m',this)">1m</button>
           <button class="tf-btn" onclick="setChartTF('5m',this)">5m</button>
@@ -1690,6 +1692,7 @@ setInterval(()=>{renderOpenPanel();renderStats();updateLiveBadge();},60000);
           <button class="tf-btn" onclick="setChartTF('1D',this)">1D</button>
         </div>
       </div>
+      <div class="chart-legend-bar" id="chart-legend"></div>
       <div class="chart-container">
         <div id="tv-chart"></div>
         <div class="chart-loading" id="chart-loading" style="display:none">Loading candles...</div>
@@ -1865,40 +1868,59 @@ function addTradeOverlays(t, candles){
   if(exitTime&&candles.length){
     exitCandle=candles.reduce((prev,cur)=>Math.abs(cur.time-exitTime)<Math.abs(prev.time-exitTime)?cur:prev);
   }
-  // Entry marker
+  // Entry marker — YOUR direction only (counter is same price, no need to double-stack)
   if(entryCandle){
     const isBull=t.youSaid==='BUY'||t.youSaid==='LONG';
-    markers.push({time:entryCandle.time,position:isBull?'belowBar':'aboveBar',color:'#4d9fff',shape:isBull?'arrowUp':'arrowDown',text:'Entry '+fmtP(t.entry,t.sym)});
-    // Counter marker (opposite)
-    markers.push({time:entryCandle.time,position:isBull?'aboveBar':'belowBar',color:'#ff3d5f',shape:isBull?'arrowDown':'arrowUp',text:'Counter '+t.counter});
+    markers.push({
+      time:entryCandle.time,
+      position:isBull?'belowBar':'aboveBar',
+      color:'#4d9fff',
+      shape:isBull?'arrowUp':'arrowDown',
+      text:'You: '+t.youSaid
+    });
   }
-  // Exit marker
+  // Exit marker — show counter result color
   if(exitCandle&&t.exit){
-    const counterWin=calcClosedPts(t)>=0;
-    markers.push({time:exitCandle.time,position:'aboveBar',color:counterWin?'#00d98b':'#ff3d5f',shape:'circle',text:'Exit '+fmtP(t.exit,t.sym)});
+    const cpts=calcClosedPts(t);
+    const counterWin=cpts!=null&&cpts>=0;
+    const isBull=t.youSaid==='BUY'||t.youSaid==='LONG';
+    markers.push({
+      time:exitCandle.time,
+      position:isBull?'aboveBar':'belowBar',
+      color:counterWin?'#00d98b':'#ff3d5f',
+      shape:'circle',
+      text:'CTR: '+(counterWin?'WIN':'LOSS')
+    });
   }
   if(markers.length) candleSeries.setMarkers(markers.sort((a,b)=>a.time-b.time));
 
-  // Price lines
-  const lines=[
-    t.entry&&{price:t.entry,color:'#4d9fff',lineWidth:1,lineStyle:2,title:'Entry'},
-    t.exit&&{price:t.exit,color:'#e0e0f0',lineWidth:1,lineStyle:2,title:'Exit'},
-    t.tp&&{price:t.tp,color:'#00d98b',lineWidth:1,lineStyle:1,title:'TP'},
-    t.sl&&{price:t.sl,color:'#ff3d5f',lineWidth:1,lineStyle:1,title:'SL'},
-  ].filter(Boolean);
-  lines.forEach(l=>candleSeries.createPriceLine(l));
-
-  // MFE/MAE lines if available
-  if(t.mfe!=null){
+  // Price lines — axisLabelVisible:false prevents right-edge label clutter
+  // Only show lines that won't overlap (check price proximity)
+  const priceLines=[];
+  const addLine=(price,color,style,label)=>{
+    if(price==null)return;
+    // Skip if too close to an existing line (within 0.05% of each other)
+    const tooClose=priceLines.some(l=>Math.abs(l.price-price)/price<0.0005);
+    if(!tooClose){
+      priceLines.push({price,color,style,label});
+      candleSeries.createPriceLine({price,color,lineWidth:1,lineStyle:style,title:label,axisLabelVisible:true});
+    }
+  };
+  addLine(t.entry,'#4d9fff',2,'Entry '+fmtP(t.entry,t.sym));
+  addLine(t.exit,'#c0c0d0',2,'Exit '+fmtP(t.exit,t.sym));
+  addLine(t.tp,'#00d98b',1,'TP');
+  addLine(t.sl,'#ff3d5f',1,'SL');
+  // MFE/MAE — only if meaningfully different from entry/exit
+  if(t.mfe!=null&&Math.abs(t.mfe)>0.01){
     const mfePrice=(t.counter==='LONG'||t.counter==='BUY')?t.entry+t.mfe:t.entry-t.mfe;
-    if(mfePrice) candleSeries.createPriceLine({price:mfePrice,color:'rgba(0,217,139,0.4)',lineWidth:1,lineStyle:3,title:'MFE'});
+    addLine(mfePrice,'rgba(0,217,139,0.5)',3,'MFE');
   }
-  if(t.mae!=null){
+  if(t.mae!=null&&Math.abs(t.mae)>0.01){
     const maePrice=(t.counter==='LONG'||t.counter==='BUY')?t.entry+t.mae:t.entry-t.mae;
-    if(maePrice) candleSeries.createPriceLine({price:maePrice,color:'rgba(255,61,95,0.4)',lineWidth:1,lineStyle:3,title:'MAE'});
+    addLine(maePrice,'rgba(255,61,95,0.5)',3,'MAE');
   }
   if(t.trailStop){
-    candleSeries.createPriceLine({price:t.trailStop,color:'rgba(167,139,250,0.6)',lineWidth:1,lineStyle:1,title:'Trail Stop'});
+    addLine(t.trailStop,'rgba(167,139,250,0.7)',1,'Trail');
   }
 
   // Legend
