@@ -515,17 +515,21 @@ function goPage(p,el){
 }
 
 // ── LIVE PRICES ───────────────────────────────────────────────────────────────
+const WORKER='https://fifty-fifty-prices.tsuharley.workers.dev';
+function proxy(url){return fetch(`${WORKER}?url=${encodeURIComponent(url)}`).then(r=>r.json());}
+
 async function fetchPrices(){
-  if(location.protocol==='file:'){
-    document.getElementById('ptext').textContent='Local file — no live prices';
-    return;
-  }
   try{
     const R={},all=[];
+
+    // CRYPTO — via Coinbase through worker
     ['BTC','ETH','SOL','XRP','BNB','AVAX','DOGE','LINK'].forEach(s=>{
-      all.push(fetch(`https://api.coinbase.com/v2/prices/${s}-USD/spot`).then(r=>r.json()).then(d=>{if(d?.data?.amount)R[s+'-USD']=+d.data.amount;}).catch(()=>{}));
+      all.push(proxy(`https://api.coinbase.com/v2/prices/${s}-USD/spot`)
+        .then(d=>{if(d?.data?.amount)R[s+'-USD']=+d.data.amount;}).catch(()=>{}));
     });
-    all.push(fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()).then(d=>{
+
+    // FOREX — via open.er-api through worker
+    all.push(proxy('https://open.er-api.com/v6/latest/USD').then(d=>{
       if(!d?.rates)return;const r=d.rates;
       if(r.EUR)R['EURUSD=X']=+(1/r.EUR).toFixed(5);
       if(r.GBP)R['GBPUSD=X']=+(1/r.GBP).toFixed(5);
@@ -538,18 +542,22 @@ async function fetchPrices(){
       if(r.EUR&&r.JPY)R['EURJPY=X']=+(r.JPY/r.EUR).toFixed(3);
       if(r.GBP&&r.JPY)R['GBPJPY=X']=+(r.JPY/r.GBP).toFixed(3);
     }).catch(()=>{}));
-    all.push(fetch('https://api.metals.live/v1/spot').then(r=>r.json()).then(d=>{
+
+    // METALS — via metals.live through worker
+    all.push(proxy('https://api.metals.live/v1/spot').then(d=>{
       if(!Array.isArray(d))return;
       d.forEach(i=>{
         if(i.gold)R['XAUUSD']=+i.gold;if(i.silver)R['XAGUSD']=+i.silver;
         if(i.platinum)R['XPTUSD']=+i.platinum;if(i.palladium)R['XPDUSD']=+i.palladium;
       });
     }).catch(()=>{}));
+
+    // FUTURES & COMMODITIES — Yahoo Finance through worker
     ['ES=F','NQ=F','YM=F','RTY=F','GC=F','SI=F','PL=F','CL=F','BZ=F','NG=F','HG=F','ZB=F','ZN=F','ZC=F','ZW=F','ZS=F'].forEach(sym=>{
-      all.push(fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1m&range=1d`).then(r=>r.json()).then(d=>{
-        const p=d?.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)R[sym]=+p;
-      }).catch(()=>{}));
+      all.push(proxy(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1m&range=1d`)
+        .then(d=>{const p=d?.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)R[sym]=+p;}).catch(()=>{}));
     });
+
     await Promise.allSettled(all);
     Object.assign(livePrices,R);
     isLive=Object.keys(R).length>0;
@@ -557,7 +565,9 @@ async function fetchPrices(){
     document.getElementById('ptext').textContent=isLive?`Live · ${new Date().toLocaleTimeString()}`:'Prices unavailable';
     checkTPSL();
     refreshCurrentPage();
-  }catch(e){}
+  }catch(e){
+    document.getElementById('ptext').textContent='Price error';
+  }
 }
 
 function getP(sym){return livePrices[sym]??null}
