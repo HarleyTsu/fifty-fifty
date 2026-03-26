@@ -353,12 +353,25 @@ textarea.minput{resize:none;height:65px}
 <div class="overlay" id="exit-modal">
   <div class="mbox">
     <div class="mtitle" id="exit-title">Close Trade</div>
-    <div class="mfield"><div class="mlabel">Exit Price</div><input type="number" class="minput" id="exit-price" step="any"></div>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="ea win" style="flex:1;padding:9px" onclick="doClose('WIN')">✓ WIN</button>
-      <button class="ea loss" style="flex:1;padding:9px" onclick="doClose('LOSS')">✗ LOSS</button>
+    <div class="mfield">
+      <div class="mlabel">Exit Price</div>
+      <input type="number" class="minput" id="exit-price" step="any" oninput="previewClose()">
     </div>
-    <div class="macts"><button class="mcancel" style="width:100%;margin-top:6px" onclick="closeM('exit-modal')">Cancel</button></div>
+    <div id="exit-preview" style="background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-top:8px;display:none">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+        <span style="color:var(--muted)">P&L Points</span><span id="ep-pts" style="font-weight:500">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+        <span style="color:var(--muted)">P&L Dollars</span><span id="ep-usd" style="font-weight:500">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px">
+        <span style="color:var(--muted)">Result</span><span id="ep-result" style="font-weight:500">—</span>
+      </div>
+    </div>
+    <div class="macts">
+      <button class="msave" onclick="doClose()">Confirm Close</button>
+      <button class="mcancel" onclick="closeM('exit-modal')">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -569,7 +582,7 @@ textarea.minput{resize:none;height:65px}
       <th>Status</th><th>Type</th><th>Date</th><th>Mkt</th><th>Asset</th>
       <th>You Said</th><th>Counter</th><th>TF</th>
       <th>Entry</th><th>Exit</th><th>TP</th><th>SL</th>
-      <th>Live</th><th>P&L pts</th><th>P&L $</th>
+      <th>Live</th><th>Your P&L pts</th><th>Counter P&L pts</th><th>Counter P&L $</th>
       <th>R:R Plan</th><th>R:R Real</th><th>Favor</th>
       <th>Duration</th><th>MFE</th><th>MAE</th><th>Conv.</th><th>Note</th>
     </tr></thead><tbody id="jbody"></tbody></table>
@@ -857,14 +870,29 @@ function durStr(t){
   if(h>24)return Math.floor(h/24)+'d '+h%24+'h';
   if(h>0)return h+'h '+m+'m';return m+'m';
 }
+// YOUR trade P&L (what you said)
+function calcYourLivePnl(t){
+  if(t.entry==null||!t.sym)return null;
+  const c=gP(t.sym);if(c==null)return null;
+  const d=c-t.entry;
+  return(t.youSaid==='LONG'||t.youSaid==='BUY')?d:-d;
+}
+function calcYourClosedPts(t){
+  if(t.entry==null||t.exit==null)return null;
+  const d=t.exit-t.entry;
+  return(t.youSaid==='LONG'||t.youSaid==='BUY')?d:-d;
+}
+// COUNTER trade P&L (the flip)
 function calcLivePnl(t){
   if(t.entry==null||!t.sym)return null;
   const c=gP(t.sym);if(c==null)return null;
-  const d=c-t.entry;return(t.counter==='LONG'||t.counter==='BUY')?d:-d;
+  const d=c-t.entry;
+  return(t.counter==='LONG'||t.counter==='BUY')?d:-d;
 }
 function calcClosedPts(t){
   if(t.entry==null||t.exit==null)return null;
-  const d=t.exit-t.entry;return(t.counter==='LONG'||t.counter==='BUY')?d:-d;
+  const d=t.exit-t.entry;
+  return(t.counter==='LONG'||t.counter==='BUY')?d:-d;
 }
 function calcUsd(t,pts){if(pts==null||!t.tickVal||!t.size)return null;return pts*t.tickVal*t.size;}
 function calcRR(t){
@@ -1258,8 +1286,11 @@ function renderJournal(){
   list.forEach(t=>{
     const isOpen=t.result==='OPEN',isPending=t.result==='PENDING';
     const cur=isOpen&&t.sym?gP(t.sym):null;
-    const pts=isOpen?calcLivePnl(t):isPending?null:calcClosedPts(t);
-    const usd=calcUsd(t,pts);
+    // Counter P&L (the flip)
+    const counterPts=isOpen?calcLivePnl(t):isPending?null:calcClosedPts(t);
+    const counterUsd=calcUsd(t,counterPts);
+    // Your P&L (what you said)
+    const yourPts=isOpen?calcYourLivePnl(t):isPending?null:calcYourClosedPts(t);
     const favor=calcFavor(t);
     const dots=Array.from({length:5},(_,i)=>`<div class="cdot${i<t.conviction?' on':''}"></div>`).join('');
     const ms={FUT:'FUT',COM:'COM',FOR:'FX',CRY:'BTC'}[t.market]||t.market;
@@ -1280,9 +1311,10 @@ function renderJournal(){
       <td>${t.exit!=null?fmtP(t.exit,t.sym):isOpen?'<span style="color:var(--amber)">Open</span>':isPending?'<span style="color:var(--amber)">Pending</span>':'—'}</td>
       <td style="color:var(--green)">${t.tp?fmtP(t.tp,t.sym):'—'}</td>
       <td style="color:var(--red)">${t.sl?fmtP(t.sl,t.sym):'—'}</td>
-      <td class="${cur&&pts!=null&&pts>=0?'cg':cur&&pts!=null?'cr':''}">${cur?fmtP(cur,t.sym):'—'}</td>
-      <td class="${pts!=null&&pts>=0?'cg':pts!=null?'cr':''}">${fmtPts(pts,t.sym)}</td>
-      <td class="${usd!=null&&usd>=0?'cg':usd!=null?'cr':''}">${fmtUsd(usd)}</td>
+      <td class="${cur&&counterPts!=null&&counterPts>=0?'cg':cur&&counterPts!=null?'cr':''}">${cur?fmtP(cur,t.sym):'—'}</td>
+      <td class="${yourPts!=null&&yourPts>=0?'cg':yourPts!=null?'cr':''}">${fmtPts(yourPts,t.sym)}</td>
+      <td class="${counterPts!=null&&counterPts>=0?'cg':counterPts!=null?'cr':''}">${fmtPts(counterPts,t.sym)}</td>
+      <td class="${counterUsd!=null&&counterUsd>=0?'cg':counterUsd!=null?'cr':''}">${fmtUsd(counterUsd)}</td>
       <td class="ca">${calcRR(t)||'—'}</td>
       <td class="${calcActualRR(t)&&parseFloat((calcActualRR(t)||'0').split(':')[1])>=1?'cg':'cr'}">${calcActualRR(t)||'—'}</td>
       <td>${favor?`<span class="${favor==='bull'?'cg':'cr'}">${favor==='bull'?'▲ Bull':'▼ Bear'}</span>`:'—'}</td>
@@ -1317,8 +1349,9 @@ function renderJournal(){
           <div class="exp-row-item"><span class="exp-key">Exit</span><span>${t.exit!=null?fmtP(t.exit,t.sym):'<span style="color:var(--amber)">Not closed</span>'}</span></div>
           <div class="exp-row-item"><span class="exp-key">TP</span><span style="color:var(--green)">${t.tp?fmtP(t.tp,t.sym):'—'}</span></div>
           <div class="exp-row-item"><span class="exp-key">SL</span><span style="color:var(--red)">${t.sl?fmtP(t.sl,t.sym):'—'}</span></div>
-          <div class="exp-row-item"><span class="exp-key">P&L Points</span><span class="${pts!=null&&pts>=0?'cg':pts!=null?'cr':''}">${fmtPts(pts,t.sym)}</span></div>
-          <div class="exp-row-item"><span class="exp-key">P&L Dollars</span><span class="${usd!=null&&usd>=0?'cg':usd!=null?'cr':''}">${fmtUsd(usd)}</span></div>
+          <div class="exp-row-item"><span class="exp-key" style="color:var(--muted)">Your P&L pts</span><span class="${yourPts!=null&&yourPts>=0?'cg':yourPts!=null?'cr':''}">${fmtPts(yourPts,t.sym)}</span></div>
+          <div class="exp-row-item"><span class="exp-key" style="color:var(--red)">Counter P&L pts</span><span class="${counterPts!=null&&counterPts>=0?'cg':counterPts!=null?'cr':''}">${fmtPts(counterPts,t.sym)}</span></div>
+          <div class="exp-row-item"><span class="exp-key" style="color:var(--red)">Counter P&L $</span><span class="${counterUsd!=null&&counterUsd>=0?'cg':counterUsd!=null?'cr':''}">${fmtUsd(counterUsd)}</span></div>
           <div class="exp-row-item"><span class="exp-key">Planned R:R</span><span class="ca">${calcRR(t)||'—'}</span></div>
           <div class="exp-row-item"><span class="exp-key">Actual R:R</span><span class="${calcActualRR(t)?'cg':'cr'}">${calcActualRR(t)||'—'}</span></div>
         </div>
@@ -1461,12 +1494,40 @@ function openExitModal(id){
   document.getElementById('exit-price').value=cur||'';
   openM('exit-modal');
 }
-function doClose(result){
+function previewClose(){
   const t=trades.find(x=>x.id===exitId);if(!t)return;
-  const ep=parseFloat(document.getElementById('exit-price').value)||null;
-  if(ep)t.exit=ep;t.result=result;t.closedAt=Date.now();
+  const ep=parseFloat(document.getElementById('exit-price').value);
+  const preview=document.getElementById('exit-preview');
+  if(!ep||!t.entry){preview.style.display='none';return;}
+  // Counter P&L
+  const d=ep-t.entry;
+  const counterPts=(t.counter==='LONG'||t.counter==='BUY')?d:-d;
+  // Your P&L
+  const yourPts=(t.youSaid==='LONG'||t.youSaid==='BUY')?d:-d;
+  const counterUsd=calcUsd(t,counterPts);
+  const counterResult=counterPts>0?'WIN':counterPts<0?'LOSS':'BREAKEVEN';
+  const yourResult=yourPts>0?'WIN':'LOSS';
+  document.getElementById('ep-pts').textContent=fmtPts(counterPts,t.sym)+' (counter)  |  '+fmtPts(yourPts,t.sym)+' (yours)';
+  document.getElementById('ep-pts').style.color=counterPts>=0?'var(--green)':'var(--red)';
+  document.getElementById('ep-usd').textContent=counterUsd!=null?fmtUsd(counterUsd)+' (counter)':'— (no size/tick)';
+  document.getElementById('ep-usd').style.color=counterUsd!=null&&counterUsd>=0?'var(--green)':'var(--red)';
+  document.getElementById('ep-result').textContent='Counter: '+counterResult+' / Your trade: '+yourResult;
+  document.getElementById('ep-result').style.color=counterResult==='WIN'?'var(--green)':'var(--red)';
+  preview.style.display='block';
+}
+function doClose(){
+  const t=trades.find(x=>x.id===exitId);if(!t)return;
+  const ep=parseFloat(document.getElementById('exit-price').value);
+  if(!ep){showToast('Enter an exit price','');return;}
+  t.exit=ep;t.closedAt=Date.now();
+  // Auto-determine result from counter trade direction
+  const d=ep-t.entry;
+  const counterPts=(t.counter==='LONG'||t.counter==='BUY')?d:-d;
+  t.result=counterPts>0?'WIN':'LOSS';
+  // Store both P&L values
+  t.yourClosedPts=((t.youSaid==='LONG'||t.youSaid==='BUY')?d:-d);
   save();closeM('exit-modal');renderStats();renderOpenPanel();renderPositions();renderJournal();
-  showToast(result==='WIN'?'Counter Win! 🔥':'Counter Loss',t.asset);
+  showToast(t.result==='WIN'?'Counter Win! 🔥':'Counter Loss — Your gut was right',t.asset);
 }
 function reopenTrade(id){
   const t=trades.find(x=>x.id===id);if(!t)return;
