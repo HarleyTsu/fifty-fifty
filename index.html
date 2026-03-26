@@ -332,6 +332,40 @@ textarea.minput{resize:none;height:65px}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--s1)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── HELP PAGE ── */
+#page-help{padding:24px;max-width:900px;margin:0 auto}
+.help-section{margin-bottom:32px}
+.help-section-title{font-size:11px;font-weight:500;color:#fff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.help-section-title .hs-icon{color:var(--red)}
+.help-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.help-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:13px 15px}
+.help-term{font-size:12px;font-weight:500;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.help-badge{font-size:8px;padding:2px 6px;border-radius:3px;font-weight:500}
+.hb-blue{background:rgba(77,159,255,.15);color:var(--blue)}
+.hb-green{background:rgba(0,217,139,.15);color:var(--green)}
+.hb-red{background:rgba(255,61,95,.15);color:var(--red)}
+.hb-amber{background:rgba(255,176,32,.15);color:var(--amber)}
+.hb-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.hb-muted{background:var(--s3);color:var(--muted)}
+.help-def{font-size:11px;color:var(--muted);line-height:1.7}
+.help-def strong{color:var(--text)}
+.help-color-key{display:flex;flex-direction:column;gap:8px}
+.color-row{display:flex;align-items:center;gap:10px;font-size:11px}
+.color-swatch{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+
+/* ── TOOLTIPS ── */
+[data-tip]{position:relative;cursor:help}
+[data-tip]::after{
+  content:attr(data-tip);
+  position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  background:#1a1a2e;border:1px solid var(--border2);color:var(--text);
+  font-size:10px;line-height:1.5;padding:7px 10px;border-radius:6px;
+  white-space:nowrap;max-width:240px;white-space:normal;width:max-content;
+  pointer-events:none;opacity:0;transition:opacity .15s;z-index:9999;
+  font-family:var(--mono);font-weight:400;
+}
+[data-tip]:hover::after{opacity:1}
 @media print{.ticker-wrap,.nav,.stats,.form-panel,.oc-actions,.p-actions,.exp-acts,.overlay,.toast,.dbtn,.dtoolbar{display:none!important}.page.active{height:auto;overflow:visible}}
 
 /* ── CHART PAGE ── */
@@ -456,6 +490,7 @@ textarea.minput{resize:none;height:65px}
     <button class="nl" onclick="goPage('intel',this)">◈ COUNTER INTEL</button>
     <button class="nl" onclick="goPage('daily',this)">▦ DAILY LOG</button>
     <button class="nl" onclick="goPage('chart',this)">📊 CHART REPLAY</button>
+    <button class="nl" onclick="goPage('help',this)">? HELP</button>
   </div>
   <div class="nav-r">
     <div class="pill"><div class="pdot" id="pdot"></div><span id="ptext">Connecting...</span></div>
@@ -473,10 +508,10 @@ textarea.minput{resize:none;height:65px}
     <div>
       <div class="flabel">Market</div>
       <div class="mtabs">
-        <button class="mtab active" onclick="setMkt('FUT',this)">📈 Futures</button>
-        <button class="mtab" onclick="setMkt('COM',this)">🥇 Commod.</button>
-        <button class="mtab" onclick="setMkt('FOR',this)">💱 Forex</button>
-        <button class="mtab" onclick="setMkt('CRY',this)">₿ Crypto</button>
+        <button class="mtab active" data-tip="Index and commodity futures: ES, NQ, GC Gold, SI Silver, CL Crude" onclick="setMkt('FUT',this)">📈 Futures</button>
+        <button class="mtab" data-tip="Spot commodities: Gold, Silver, Platinum, Crude Oil, Wheat" onclick="setMkt('COM',this)">🥇 Commod.</button>
+        <button class="mtab" data-tip="Foreign exchange pairs: EUR/USD, GBP/USD, USD/JPY etc." onclick="setMkt('FOR',this)">💱 Forex</button>
+        <button class="mtab" data-tip="Crypto spot and perpetual: BTC, ETH, SOL, XRP etc." onclick="setMkt('CRY',this)">₿ Crypto</button>
       </div>
     </div>
 
@@ -501,11 +536,11 @@ textarea.minput{resize:none;height:65px}
     <div>
       <div class="flabel">Order Type</div>
       <div class="order-tabs">
-        <button class="otab active market" onclick="setOrder('MARKET',this)">Market</button>
-        <button class="otab" onclick="setOrder('LIMIT',this)">Limit</button>
-        <button class="otab" onclick="setOrder('STOP',this)">Stop</button>
-        <button class="otab" onclick="setOrder('TRAIL',this)">Trailing</button>
-        <button class="otab" onclick="setOrder('LADDER',this)">Ladder</button>
+        <button class="otab active market" data-tip="Log immediately at current live price. No trigger needed." onclick="setOrder('MARKET',this)">Market</button>
+        <button class="otab" data-tip="Sits PENDING until price reaches your level. BUY limit triggers below, SELL limit triggers above." onclick="setOrder('LIMIT',this)">Limit</button>
+        <button class="otab" data-tip="Triggers on breakout through your level. Opposite of a limit — enters on momentum." onclick="setOrder('STOP',this)">Stop</button>
+        <button class="otab" data-tip="Stop trails the price peak by a set distance (pts or %). Auto-closes on reversal." onclick="setOrder('TRAIL',this)">Trailing</button>
+        <button class="otab" data-tip="Split entry across up to 5 price levels. Each leg activates independently." onclick="setOrder('LADDER',this)">Ladder</button>
       </div>
     </div>
 
@@ -513,8 +548,8 @@ textarea.minput{resize:none;height:65px}
     <div id="sec-market" class="order-section">
       <div class="order-desc">Logs immediately at the current live price. No trigger needed.</div>
       <div class="quick-btns">
-        <button class="qbuy" onclick="quickTrade('BUY')">▲ MARKET BUY</button>
-        <button class="qsell" onclick="quickTrade('SELL')">▼ MARKET SELL</button>
+        <button class="qbuy" data-tip="Log a BUY at live price instantly. Counter trade = SELL. Opens TP/SL popup." onclick="quickTrade('BUY')">▲ MARKET BUY</button>
+        <button class="qsell" data-tip="Log a SELL at live price instantly. Counter trade = BUY. Opens TP/SL popup." onclick="quickTrade('SELL')">▼ MARKET SELL</button>
       </div>
       <div class="row2">
         <div><div class="flabel">Entry Price <span class="tip">or use market btns</span></div><input type="number" id="m-entry" step="any" placeholder="Live price"></div>
@@ -562,20 +597,20 @@ textarea.minput{resize:none;height:65px}
     <!-- SHARED: TP / SL -->
     <div id="tpsl-section">
       <div class="row2">
-        <div><div class="flabel">Take Profit <span class="tip cg">counter TP</span></div><input type="number" id="f-tp" step="any" placeholder="TP price" style="border-color:rgba(0,217,139,.2)" oninput="updateRisk()"></div>
-        <div><div class="flabel">Stop Loss <span class="tip cr">counter SL</span></div><input type="number" id="f-sl" step="any" placeholder="SL price" style="border-color:rgba(255,61,95,.2)" oninput="updateRisk()"></div>
+        <div><div class="flabel" data-tip="Price level where the counter trade auto-closes in profit. Green line on chart.">Take Profit <span class="tip cg">counter TP</span></div><input type="number" id="f-tp" step="any" placeholder="TP price" style="border-color:rgba(0,217,139,.2)" oninput="updateRisk()"></div>
+        <div><div class="flabel" data-tip="Price level where the counter trade auto-closes to limit losses. Red line on chart.">Stop Loss <span class="tip cr">counter SL</span></div><input type="number" id="f-sl" step="any" placeholder="SL price" style="border-color:rgba(255,61,95,.2)" oninput="updateRisk()"></div>
       </div>
     </div>
 
     <!-- SHARED: TICK + TF -->
     <div class="row2">
-      <div><div class="flabel">Tick Value ($) <span class="tip" id="tick-tip"></span></div><input type="number" id="f-tick" step="any" min="0" oninput="updateRisk()"></div>
+      <div><div class="flabel" data-tip="Dollar value per 1 point of movement per contract. GC Gold=$10, ES=$50, NQ=$20, CL=$10.">Tick Value ($) <span class="tip" id="tick-tip"></span></div><input type="number" id="f-tick" step="any" min="0" oninput="updateRisk()"></div>
       <div><div class="flabel">Timeframe</div><select id="f-tf"></select></div>
     </div>
 
     <!-- RISK CALC -->
     <div class="risk-box">
-      <div class="risk-title">⚠ RISK CALCULATOR</div>
+      <div class="risk-title" data-tip="Calculates dollar risk and reward before logging. Requires entry, TP, SL, tick value and size.">⚠ RISK CALCULATOR</div>
       <div class="risk-row"><span>Max Loss if SL hit:</span><span class="cr" id="r-loss">—</span></div>
       <div class="risk-row"><span>Target Gain if TP hit:</span><span class="cg" id="r-gain">—</span></div>
       <div class="risk-row"><span>R:R Ratio:</span><span class="ca" id="r-rr">—</span></div>
@@ -625,12 +660,12 @@ textarea.minput{resize:none;height:65px}
       <span style="margin-left:auto;font-size:9px;color:var(--muted)" id="j-count"></span>
     </div>
     <div class="jtable"><table><thead><tr>
-      <th>Status</th><th>Type</th><th>Date</th><th>Mkt</th><th>Asset</th>
-      <th>You Said</th><th>Counter</th><th>TF</th>
+      <th data-tip="OPEN=active, PENDING=waiting for trigger, WIN/LOSS/TP/SL=closed">Status</th><th data-tip="Order type: MARKET/LIMIT/STOP/TRAIL/LADDER">Type</th><th>Date</th><th>Mkt</th><th>Asset</th>
+      <th data-tip="Your gut direction — what you wanted to trade">You Said</th><th data-tip="The automatic flip — opposite of your direction. This is what gets tracked.">Counter</th><th>TF</th>
       <th>Entry</th><th>Exit</th><th>TP</th><th>SL</th>
-      <th>Live</th><th>Your P&L pts</th><th>Counter P&L pts</th><th>Counter P&L $</th>
-      <th>R:R Plan</th><th>R:R Real</th><th>Favor</th>
-      <th>Duration</th><th>MFE</th><th>MAE</th><th>Conv.</th><th>Note</th>
+      <th data-tip="Current live market price for open trades">Live</th><th data-tip="Points your original direction made or lost">Your P&L pts</th><th data-tip="Points the counter (flipped) trade made or lost — this is the primary stat">Counter P&L pts</th><th data-tip="Dollar value of counter trade P&L = pts × tick value × contracts">Counter P&L $</th>
+      <th data-tip="Planned Risk:Reward ratio from entry/TP/SL. 1:2 = risk 1 to make 2.">R:R Plan</th><th data-tip="Actual realized Risk:Reward. What you got vs what you risked.">R:R Real</th><th data-tip="Which direction price moved more: Bull (up) or Bear (down). Based on MFE vs MAE.">Favor</th>
+      <th>Duration</th><th data-tip="Max Favorable Excursion — furthest the counter trade moved in your favor while open.">MFE</th><th data-tip="Max Adverse Excursion — furthest price moved against the counter trade while open.">MAE</th><th data-tip="Conviction level 1-5 — how strongly your gut felt about the trade at entry.">Conv.</th><th>Note</th>
     </tr></thead><tbody id="jbody"></tbody></table>
     <div class="empty" id="j-empty" style="display:none">No trades match filter.</div></div>
   </div>
@@ -660,6 +695,169 @@ textarea.minput{resize:none;height:65px}
     </div>
     <div id="daily-content"></div>
   </div>
+</div>
+
+<!-- PAGE: HELP -->
+<div id="page-help" class="page">
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">◈</span> THE CONCEPT — HOW THE COUNTER TRADE WORKS</div>
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-term">The Premise</div>
+        <div class="help-def">90% of your trades go the wrong way. So this journal <strong>flips your direction automatically</strong> and tracks what would have happened if you traded the opposite. Your gut becomes your signal — inverted.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Your Trade vs Counter Trade</div>
+        <div class="help-def"><strong>Your Trade</strong> = what your gut said (BUY/SELL/LONG/SHORT).<br><strong>Counter Trade</strong> = the automatic flip. If you said BUY, the counter is SELL. This is what gets tracked as the primary position.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">WIN / LOSS logic</div>
+        <div class="help-def">Result is based on the <strong>counter trade</strong>, not yours. If price went up and you said BUY (your gut was right), the counter SELL is a LOSS. The journal is tracking whether fading you works — not whether you were right.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">▤</span> ORDER TYPES</div>
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-term"><span class="help-badge hb-blue">MARKET</span></div>
+        <div class="help-def">Logs immediately at the <strong>current live price</strong>. No trigger needed. Use the Market BUY/SELL buttons for one-tap logging at exact market price.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span class="help-badge hb-green">LIMIT</span></div>
+        <div class="help-def">Sets a <strong>PENDING</strong> order at a specific price level. Activates automatically when live price touches or passes through that level. BUY limits trigger when price drops to your level. SELL limits trigger when price rises to your level.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span class="help-badge hb-amber">STOP</span></div>
+        <div class="help-def">Also PENDING. Triggers on a <strong>breakout</strong> through your level — opposite of a limit. BUY stop triggers when price rises above your level. Used to enter on momentum confirmation.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span class="help-badge hb-purple">TRAILING</span></div>
+        <div class="help-def">Enters at market. The stop loss <strong>follows the price peak</strong> by a fixed distance (points or %). As the counter trade moves in your favor, the stop trails behind. If price reverses by your set distance, it closes automatically.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span class="help-badge hb-red">LADDER</span></div>
+        <div class="help-def">Splits your entry across <strong>up to 5 price levels</strong>. Each leg activates independently when price reaches it. Combined P&L shown. Used to average into a position at multiple levels rather than one entry.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">◆</span> P&L & PERFORMANCE TERMS</div>
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-term">P&L pts <span class="help-badge hb-muted">Points</span></div>
+        <div class="help-def">Raw price movement from entry to exit. <strong>1 point = 1.00 in price</strong>. For forex, this is shown in pips (0.0001 movement). Sign is based on the counter trade direction — positive means the counter made money.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">P&L $ <span class="help-badge hb-muted">Dollars</span></div>
+        <div class="help-def">Dollar value of the P&L. Calculated as: <strong>Points × Tick Value × Contracts</strong>. Requires tick value and size to be set. GC Gold = $10/pt per contract, ES = $50/pt per contract.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">MFE <span class="help-badge hb-green">Max Favorable</span></div>
+        <div class="help-def"><strong>Maximum Favorable Excursion</strong>. The furthest the counter trade moved <em>in your favor</em> while the trade was open — before it closed. Shows how much profit was available at peak.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">MAE <span class="help-badge hb-red">Max Adverse</span></div>
+        <div class="help-def"><strong>Maximum Adverse Excursion</strong>. The furthest the counter trade moved <em>against you</em> while open. If MAE is large and final P&L is small, the trade was painful to hold. Useful for SL placement research.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">R:R Plan <span class="help-badge hb-amber">Risk/Reward</span></div>
+        <div class="help-def"><strong>Planned Risk:Reward ratio</strong>. Calculated from your entry, TP, and SL levels before the trade plays out. 1:2 means you risk 1 to make 2. Requires TP and SL to be set.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">R:R Real <span class="help-badge hb-amber">Actual</span></div>
+        <div class="help-def"><strong>Realized Risk:Reward</strong>. What you actually got vs what you risked. Calculated from actual exit price vs SL. A positive ratio means the counter trade exited with more profit than its risk exposure.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Favor <span class="help-badge hb-muted">Price Direction</span></div>
+        <div class="help-def">Which direction price moved <em>more</em> during the trade — Bullish (up) or Bearish (down). Based on MFE vs MAE magnitude. If MFE > MAE, price favored the bull side more.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Conviction <span class="help-badge hb-purple">1–5</span></div>
+        <div class="help-def">How strongly your gut felt about the trade at entry. <strong>1 = weak feeling</strong>, 5 = extremely certain. Tracked over time to see if high-conviction gut feelings lose more often — which would mean the counter trade wins more on those.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">◉</span> TRADE RESULTS</div>
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-term"><span style="color:var(--green)">WIN</span></div>
+        <div class="help-def">Counter trade closed profitably. Price moved in the counter direction. You manually closed at a profit, or TP was hit.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span style="color:var(--red)">LOSS</span></div>
+        <div class="help-def">Counter trade closed at a loss. Price moved in your original direction (your gut was right this time). Closed manually at a loss, or SL was hit.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span style="color:var(--green)">TP</span></div>
+        <div class="help-def"><strong>Take Profit hit</strong>. Counter trade automatically closed when price reached the TP level. Result = WIN.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span style="color:var(--red)">SL</span></div>
+        <div class="help-def"><strong>Stop Loss hit</strong>. Counter trade automatically closed when price hit the SL level. Result = LOSS.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span style="color:var(--amber)">OPEN</span></div>
+        <div class="help-def">Trade is currently active. Live P&L is updating in real time based on current market price vs entry.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term"><span style="color:var(--amber)">PENDING</span></div>
+        <div class="help-def">Limit or Stop order waiting for price to reach the trigger level. Not yet active — no P&L until activated.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">📊</span> CHART REPLAY</div>
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-term">Blue arrow / line</div>
+        <div class="help-def"><strong>Your entry</strong>. The price you entered the trade at and the direction your gut said. Arrow points up for BUY/LONG, down for SELL/SHORT.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Green / Red circle</div>
+        <div class="help-def"><strong>Exit point</strong>. Green circle = counter trade WON at close. Red circle = counter trade LOST at close. Labeled CTR: WIN or CTR: LOSS.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Dashed blue line</div>
+        <div class="help-def"><strong>Entry price level</strong>. Horizontal line across the chart at your exact entry price for reference.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Solid green line</div>
+        <div class="help-def"><strong>Take Profit level</strong>. Where the counter trade is targeting. Only shows if TP was set.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Solid red line</div>
+        <div class="help-def"><strong>Stop Loss level</strong>. Where the counter trade gets stopped out. Only shows if SL was set.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Dotted green line</div>
+        <div class="help-def"><strong>MFE level</strong>. The highest price the counter trade reached in its favor. Shows how close it got to the ideal exit.</div>
+      </div>
+      <div class="help-card">
+        <div class="help-term">Dotted red line</div>
+        <div class="help-def"><strong>MAE level</strong>. The worst price the counter trade reached against you. Shows the maximum drawdown while open.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title"><span class="hs-icon">■</span> COLOR KEY</div>
+    <div class="help-color-key">
+      <div class="color-row"><div class="color-swatch" style="background:var(--green)"></div><span style="color:var(--green);font-weight:500;min-width:80px">Green</span><span style="color:var(--muted)">Counter trade profit, WIN result, TP hit, favorable movement</span></div>
+      <div class="color-row"><div class="color-swatch" style="background:var(--red)"></div><span style="color:var(--red);font-weight:500;min-width:80px">Red</span><span style="color:var(--muted)">Counter trade loss, LOSS result, SL hit, adverse movement</span></div>
+      <div class="color-row"><div class="color-swatch" style="background:var(--amber)"></div><span style="color:var(--amber);font-weight:500;min-width:80px">Amber</span><span style="color:var(--muted)">Open/Pending trades, R:R ratio, neutral status</span></div>
+      <div class="color-row"><div class="color-swatch" style="background:var(--blue)"></div><span style="color:var(--blue);font-weight:500;min-width:80px">Blue</span><span style="color:var(--muted)">Entry price, Market order type, informational</span></div>
+      <div class="color-row"><div class="color-swatch" style="background:var(--purple)"></div><span style="color:var(--purple);font-weight:500;min-width:80px">Purple</span><span style="color:var(--muted)">Trailing stop orders, conviction level, futures market</span></div>
+      <div class="color-row"><div class="color-swatch" style="background:var(--muted)"></div><span style="color:var(--muted);font-weight:500;min-width:80px">Grey</span><span style="color:var(--muted)">Your trade direction (not the counter), secondary info</span></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -1531,11 +1729,20 @@ function renderStats(){
   const pusd=trades.map(t=>calcUsd(t,calcClosedPts(t))).filter(x=>x!=null);
   const totalUsd=pusd.length?pusd.reduce((a,b)=>a+b,0):null;
   const streak=calcStreak();
+  const statTips={
+    'Trades':'Total trades logged (open + pending + closed)',
+    'Wins':'Counter trades that closed in profit — flip worked',
+    'Losses':'Counter trades that closed at a loss — your gut was right',
+    'Open':'Active trades with live P&L tracking',
+    'Pending':'Limit/Stop orders waiting for price trigger',
+    'Win Rate':'Counter win % = wins ÷ (wins+losses)',
+    'Closed P&L':'Total $ profit/loss on all closed counter trades',
+  };
   let html=[
     {l:'Trades',v:total,c:'cw'},{l:'Wins',v:wins,c:'cg'},{l:'Losses',v:losses,c:'cr'},
     {l:'Open',v:open,c:'ca'},{l:'Pending',v:pending,c:'cb'},{l:'Win Rate',v:wr,c:wins>=losses?'cg':'cr'},
     {l:'Closed P&L',v:totalUsd!=null?fmtUsd(totalUsd):'—',c:totalUsd!=null&&totalUsd>=0?'cg':'cr'},
-  ].map(c=>`<div class="sc"><div class="sl">${c.l}</div><div class="sv ${c.c}">${c.v}</div></div>`).join('');
+  ].map(c=>`<div class="sc" data-tip="${statTips[c.l]||c.l}"><div class="sl">${c.l}</div><div class="sv ${c.c}">${c.v}</div></div>`).join('');
   if(streak.n>1)html+=`<div class="streak ${streak.type}">${streak.type==='win'?'🔥':'❄'} ${streak.n} ${streak.type.toUpperCase()}</div>`;
   document.getElementById('stats').innerHTML=html;
 }
