@@ -293,21 +293,66 @@ tbody td{padding:7px 9px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .oLADDER{background:rgba(255,61,95,.12);color:var(--red)}
 
 /* ── COUNTER INTEL ── */
-#page-intel{padding:16px}
-.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:18px}
+#page-intel{padding:0;overflow-y:auto;height:calc(100vh - 120px)}
+.intel-page-inner{padding:16px;display:flex;flex-direction:column;gap:20px}
+.intel-section{}
+.intel-section-hdr{font-size:8px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
 .icard{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:12px}
 .ilabel{font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
 .ival{font-size:20px;font-weight:500}
 .isub{font-size:10px;color:var(--muted);margin-top:3px}
 .bdgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .bdcard{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:12px}
-.bdtitle{font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.bdtitle{font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;cursor:help}
 .bar-row{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:10px}
 .bar-lbl{min-width:110px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-track{flex:1;height:3px;background:var(--s4);border-radius:3px;overflow:hidden}
-.bar-fill{height:100%;border-radius:3px;background:var(--green);transition:width .4s}
+.bar-track{flex:1;height:4px;background:var(--s4);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:var(--green);transition:width .5s}
 .bar-fill.bad{background:var(--red)}
 .bar-pct{min-width:32px;text-align:right;color:var(--muted)}
+.bar-n{font-size:8px;color:var(--muted);min-width:28px}
+/* Psychology panels */
+.psy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.psy-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:14px}
+.psy-title{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;cursor:help}
+.psy-chart-wrap{position:relative;width:100%;height:140px;margin-bottom:10px}
+.psy-insight{font-size:10px;color:var(--text);line-height:1.7;padding:8px 10px;background:var(--s2);border-radius:5px;border-left:3px solid var(--border2)}
+.psy-insight.good{border-left-color:var(--green)}
+.psy-insight.warn{border-left-color:var(--amber)}
+.psy-insight.bad{border-left-color:var(--red)}
+.psy-insight.neutral{border-left-color:var(--muted)}
+.psy-insight strong{color:#fff}
+.psy-na{font-size:11px;color:var(--muted);text-align:center;padding:30px 0;font-style:italic}
+/* Revenge display */
+.revenge-display{display:flex;align-items:center;gap:16px;padding:12px 0;margin-bottom:8px}
+.revenge-big{font-size:40px;font-weight:500;font-variant-numeric:tabular-nums}
+.revenge-meta{font-size:10px;color:var(--muted);line-height:1.8}
+/* Duration display */
+.dur-display{display:flex;gap:16px;padding:8px 0;margin-bottom:8px}
+.dur-col{flex:1;text-align:center;padding:10px;background:var(--s2);border-radius:6px}
+.dur-label{font-size:8px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.dur-val{font-size:16px;font-weight:500}
+/* Patterns grid */
+.patterns-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.pattern-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:13px}
+.pattern-card.alert{border-color:rgba(255,61,95,.3);background:rgba(255,61,95,.03)}
+.pattern-card.good{border-color:rgba(0,217,139,.3);background:rgba(0,217,139,.03)}
+.pattern-card.neutral{border-color:var(--border)}
+.pattern-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pattern-icon{font-size:18px}
+.pattern-name{font-size:11px;font-weight:500;color:#fff}
+.pattern-severity{font-size:8px;padding:2px 7px;border-radius:3px}
+.sev-high{background:rgba(255,61,95,.15);color:var(--red)}
+.sev-med{background:rgba(255,176,32,.15);color:var(--amber)}
+.sev-low{background:rgba(0,217,139,.15);color:var(--green)}
+.sev-info{background:var(--s3);color:var(--muted)}
+.pattern-stat{font-size:13px;font-weight:500;margin-bottom:4px}
+.pattern-desc{font-size:10px;color:var(--muted);line-height:1.7}
+.pattern-desc strong{color:var(--text)}
+.confidence-bar{height:2px;background:var(--s4);border-radius:2px;margin-top:8px;overflow:hidden}
+.confidence-fill{height:100%;background:var(--border2);border-radius:2px}
+.confidence-label{font-size:8px;color:var(--muted);margin-top:3px}
 
 /* ── DAILY ── */
 #page-daily{padding:16px}
@@ -452,6 +497,7 @@ textarea.minput{resize:none;height:65px}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
 .legend-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
@@ -759,15 +805,90 @@ textarea.minput{resize:none;height:65px}
 
 <!-- PAGE: INTEL -->
 <div id="page-intel" class="page">
-  <div style="padding:16px">
-    <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;margin-bottom:14px">COUNTER INTELLIGENCE</div>
-    <div class="igrid" id="igrid"></div>
-    <div class="bdgrid">
-      <div class="bdcard"><div class="bdtitle">Win Rate by Market</div><div id="bd-mkt"></div></div>
-      <div class="bdcard"><div class="bdtitle">Win Rate by Conviction</div><div id="bd-conv"></div></div>
-      <div class="bdcard"><div class="bdtitle">Win Rate by Reason</div><div id="bd-reason"></div></div>
-      <div class="bdcard"><div class="bdtitle">Win Rate by Asset</div><div id="bd-asset"></div></div>
+  <div class="intel-page-inner">
+
+    <!-- SECTION 1: SUMMARY CARDS -->
+    <div class="intel-section">
+      <div class="intel-section-hdr">OVERVIEW</div>
+      <div class="igrid" id="igrid"></div>
     </div>
+
+    <!-- SECTION 2: WIN RATE BREAKDOWNS -->
+    <div class="intel-section">
+      <div class="intel-section-hdr">WIN RATE BREAKDOWN</div>
+      <div class="bdgrid">
+        <div class="bdcard"><div class="bdtitle" data-tip="Counter trade win rate grouped by which market you traded">Win Rate by Market</div><div id="bd-mkt"></div></div>
+        <div class="bdcard"><div class="bdtitle" data-tip="Shows whether high conviction gut feelings lose more — the core question of this journal">Win Rate by Conviction</div><div id="bd-conv"></div></div>
+        <div class="bdcard"><div class="bdtitle" data-tip="Which reasons for entering produce the most counter wins — tells you what to stop trusting">Win Rate by Reason</div><div id="bd-reason"></div></div>
+        <div class="bdcard"><div class="bdtitle" data-tip="Which specific assets your gut is most wrong on">Win Rate by Asset</div><div id="bd-asset"></div></div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: TIME PSYCHOLOGY -->
+    <div class="intel-section">
+      <div class="intel-section-hdr">TIME-BASED PSYCHOLOGY</div>
+      <div class="psy-grid">
+        <div class="psy-card">
+          <div class="psy-title" data-tip="Counter win rate grouped by hour of day. Reveals when your gut is most consistently wrong.">Win Rate by Hour of Day</div>
+          <div class="psy-chart-wrap">
+            <canvas id="chart-hour" height="120"></canvas>
+          </div>
+          <div class="psy-insight" id="insight-hour"></div>
+        </div>
+        <div class="psy-card">
+          <div class="psy-title" data-tip="Counter win rate by day of week. Identifies emotional trading patterns tied to week structure.">Win Rate by Day of Week</div>
+          <div class="psy-chart-wrap">
+            <canvas id="chart-dow" height="120"></canvas>
+          </div>
+          <div class="psy-insight" id="insight-dow"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: TRADE VOLUME BY HOUR -->
+    <div class="intel-section">
+      <div class="intel-section-hdr">TRADE FREQUENCY & OVERTRADING</div>
+      <div class="psy-grid">
+        <div class="psy-card">
+          <div class="psy-title" data-tip="How many trades you log per hour. Spikes indicate overtrading — usually an emotional state.">Trade Volume by Hour</div>
+          <div class="psy-chart-wrap">
+            <canvas id="chart-vol" height="120"></canvas>
+          </div>
+          <div class="psy-insight" id="insight-vol"></div>
+        </div>
+        <div class="psy-card">
+          <div class="psy-title" data-tip="Trades logged within 10 minutes of a previous loss closing. High revenge trade rate = emotional decision making.">Revenge Trade Detection</div>
+          <div class="revenge-display" id="revenge-display"></div>
+          <div class="psy-insight" id="insight-revenge"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: PSYCHOLOGICAL PATTERNS -->
+    <div class="intel-section">
+      <div class="intel-section-hdr">PSYCHOLOGICAL PATTERNS</div>
+      <div class="patterns-grid" id="patterns-grid"></div>
+    </div>
+
+    <!-- SECTION 6: DURATION ANALYSIS -->
+    <div class="intel-section">
+      <div class="intel-section-hdr">TRADE DURATION ANALYSIS</div>
+      <div class="psy-grid">
+        <div class="psy-card">
+          <div class="psy-title" data-tip="Compares average duration of winning counter trades vs losing ones. Quick losses may signal panic entries.">Win vs Loss Duration</div>
+          <div class="dur-display" id="dur-display"></div>
+          <div class="psy-insight" id="insight-dur"></div>
+        </div>
+        <div class="psy-card">
+          <div class="psy-title" data-tip="Cumulative P&L over time — shows trajectory of the counter strategy.">Cumulative Counter P&L</div>
+          <div class="psy-chart-wrap">
+            <canvas id="chart-cumulative" height="120"></canvas>
+          </div>
+          <div class="psy-insight" id="insight-cumulative"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1875,10 +1996,19 @@ function renderJournal(){
 // ══════════════════════════════════════════════════════════════════════════════
 // RENDER: COUNTER INTEL
 // ══════════════════════════════════════════════════════════════════════════════
+// ── CHART INSTANCES (destroy before redraw) ──────────────────────────────
+let intelCharts={};
+function destroyIntelCharts(){Object.values(intelCharts).forEach(c=>{try{c.destroy();}catch(e){}});intelCharts={};}
+
+function isWinTrade(t){return t.result==='WIN'||t.result==='TP';}
+function closedTrades(){return trades.filter(t=>t.result!=='OPEN'&&t.result!=='PENDING');}
+function confidence(n){return Math.min(100,Math.round(n/20*100));} // 20 trades = full confidence
+
 function renderIntel(){
-  const closed=trades.filter(t=>t.result!=='OPEN'&&t.result!=='PENDING');
-  const wins=closed.filter(t=>t.result==='WIN'||t.result==='TP').length;
-  const losses=closed.filter(t=>t.result==='LOSS'||t.result==='SL').length;
+  destroyIntelCharts();
+  const closed=closedTrades();
+  const wins=closed.filter(isWinTrade).length;
+  const losses=closed.filter(t=>!isWinTrade(t)).length;
   const wr=(wins+losses)?Math.round(wins/(wins+losses)*100):0;
   const pusd=closed.map(t=>calcUsd(t,calcClosedPts(t))).filter(x=>x!=null);
   const totalUsd=pusd.length?pusd.reduce((a,b)=>a+b,0):null;
@@ -1887,29 +2017,368 @@ function renderIntel(){
   const avgConv=trades.length?(trades.reduce((a,t)=>a+t.conviction,0)/trades.length).toFixed(1):'—';
   const streak=calcStreak();
   const pending=trades.filter(t=>t.result==='PENDING').length;
+  const avgEff=closed.map(calcEfficiency).filter(x=>x!=null);
+  const avgEffVal=avgEff.length?(avgEff.reduce((a,b)=>a+b,0)/avgEff.length).toFixed(0):null;
+
+  // ── SUMMARY CARDS ──
   document.getElementById('igrid').innerHTML=[
     {l:'Counter Win Rate',v:wr+'%',c:wr>=50?'cg':'cr',s:`${wins}W ${losses}L · ${closed.length} closed`},
     {l:'Total Closed P&L',v:totalUsd!=null?fmtUsd(totalUsd):'—',c:totalUsd!=null&&totalUsd>=0?'cg':'cr',s:'dollars'},
+    {l:'Avg Exit Efficiency',v:avgEffVal!=null?avgEffVal+'%':'—',c:avgEffVal!=null&&avgEffVal>=60?'cg':avgEffVal!=null&&avgEffVal>=30?'ca':'cr',s:'of MFE captured at exit'},
+    {l:'Avg Actual R:R',v:avgRR?'1:'+avgRR:'—',c:avgRR&&parseFloat(avgRR)>=1?'cg':'cr',s:'realized ratio'},
     {l:'TP Hits',v:closed.filter(t=>t.result==='TP').length,c:'cg',s:'auto-closed at target'},
     {l:'SL Hits',v:closed.filter(t=>t.result==='SL').length,c:'cr',s:'stopped out'},
-    {l:'Avg Actual R:R',v:avgRR?'1:'+avgRR:'—',c:avgRR&&parseFloat(avgRR)>=1?'cg':'cr',s:'realized ratio'},
     {l:'Avg Conviction',v:avgConv+'/5',c:'cp',s:'of all trades'},
     {l:'Current Streak',v:streak.n>1?streak.n+' '+streak.type.toUpperCase():'—',c:streak.type==='win'?'cg':'cr',s:'consecutive'},
-    {l:'Pending Orders',v:pending,c:'ca',s:'waiting to trigger'},
-  ].map(c=>`<div class="icard"><div class="ilabel">${c.l}</div><div class="ival ${c.c}">${c.v}</div><div class="isub">${c.s}</div></div>`).join('');
+  ].map(c=>`<div class="icard" data-tip="${c.s}"><div class="ilabel">${c.l}</div><div class="ival ${c.c}">${c.v}</div><div class="isub">${c.s}</div></div>`).join('');
+
+  // ── WIN RATE BREAKDOWNS ──
   function bd(fn,el){
-    const g={};closed.forEach(t=>{const k=fn(t);if(!g[k])g[k]={w:0,l:0};(t.result==='WIN'||t.result==='TP')?g[k].w++:g[k].l++;});
+    const g={};closed.forEach(t=>{const k=fn(t);if(!g[k])g[k]={w:0,l:0};isWinTrade(t)?g[k].w++:g[k].l++;});
     const rows=Object.entries(g).sort((a,b)=>(b[1].w+b[1].l)-(a[1].w+a[1].l)).slice(0,8);
     document.getElementById(el).innerHTML=rows.map(([k,v])=>{
       const tot=v.w+v.l,pct=tot?Math.round(v.w/tot*100):0;
-      return`<div class="bar-row"><span class="bar-lbl">${k}</span><div class="bar-track"><div class="bar-fill${pct<50?' bad':''}" style="width:${pct}%"></div></div><span class="bar-pct">${pct}%</span></div>`;
-    }).join('')||'<div style="color:var(--muted);font-size:10px">No closed trades yet</div>';
+      const conf=confidence(tot);
+      return`<div class="bar-row">
+        <span class="bar-lbl">${k}</span>
+        <div class="bar-track"><div class="bar-fill${pct<50?' bad':''}" style="width:${pct}%"></div></div>
+        <span class="bar-pct">${pct}%</span>
+        <span class="bar-n">${tot}t</span>
+      </div>`;
+    }).join('')||'<div style="color:var(--muted);font-size:10px;padding:8px 0">No closed trades yet</div>';
   }
   const mn={FUT:'Futures',COM:'Commodities',FOR:'Forex',CRY:'Crypto'};
   bd(t=>mn[t.market]||t.market,'bd-mkt');
   bd(t=>'Conv. '+t.conviction,'bd-conv');
   bd(t=>t.reason,'bd-reason');
   bd(t=>t.asset,'bd-asset');
+
+  if(closed.length<2){
+    ['chart-hour','chart-dow','chart-vol','chart-cumulative'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){const ctx=el.getContext('2d');ctx.fillStyle='#6a6a8a';ctx.font='10px monospace';ctx.fillText('Need more trades for analysis',10,60);}
+    });
+    document.getElementById('insight-hour').innerHTML='<div class="psy-na">Log at least 5 closed trades to see hourly patterns.</div>';
+    document.getElementById('insight-dow').innerHTML='<div class="psy-na">Log trades across multiple days to see daily patterns.</div>';
+    document.getElementById('insight-vol').innerHTML='<div class="psy-na">Log more trades to detect overtrading hours.</div>';
+    document.getElementById('revenge-display').innerHTML='<div class="psy-na">No trades to analyze yet.</div>';
+    document.getElementById('insight-revenge').innerHTML='';
+    document.getElementById('dur-display').innerHTML='<div class="psy-na">Need closed trades with timestamps.</div>';
+    document.getElementById('insight-dur').innerHTML='';
+    document.getElementById('patterns-grid').innerHTML='<div style="color:var(--muted);font-size:11px;padding:20px 0">Log more trades to detect psychological patterns. Minimum 5 closed trades needed.</div>';
+    document.getElementById('insight-cumulative').innerHTML='<div class="psy-na">Log more trades to see P&L trajectory.</div>';
+    return;
+  }
+
+  // ── HOUR OF DAY CHART ──
+  const hourData=Array(24).fill(null).map(()=>({w:0,l:0}));
+  closed.forEach(t=>{
+    const h=new Date(t.openedAt||Date.now()).getHours();
+    isWinTrade(t)?hourData[h].w++:hourData[h].l++;
+  });
+  const activeHours=hourData.map((d,i)=>({h:i,...d,tot:d.w+d.l})).filter(x=>x.tot>0);
+  const hourLabels=activeHours.map(x=>x.h+'h');
+  const hourWR=activeHours.map(x=>x.tot?Math.round(x.w/x.tot*100):0);
+  const hourN=activeHours.map(x=>x.tot);
+  {
+    const ctx=document.getElementById('chart-hour').getContext('2d');
+    intelCharts.hour=new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:hourLabels,
+        datasets:[{
+          label:'Win Rate %',
+          data:hourWR,
+          backgroundColor:hourWR.map(v=>v>=50?'rgba(0,217,139,0.7)':'rgba(255,61,95,0.7)'),
+          borderColor:hourWR.map(v=>v>=50?'#00d98b':'#ff3d5f'),
+          borderWidth:1,borderRadius:3,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw}% win (${hourN[ctx.dataIndex]} trades)`}}},
+        scales:{
+          x:{ticks:{color:'#6a6a8a',font:{size:9}},grid:{color:'#16161f'}},
+          y:{min:0,max:100,ticks:{color:'#6a6a8a',font:{size:9},callback:v=>v+'%'},grid:{color:'#16161f'}}
+        }
+      }
+    });
+  }
+  // Hour insight
+  const bestHour=activeHours.length?activeHours.reduce((a,b)=>(b.tot>1&&b.w/b.tot>a.w/(a.tot||1)?b:a)):null;
+  const worstHour=activeHours.length?activeHours.filter(x=>x.tot>1).reduce((a,b)=>(b.w/b.tot<a.w/(a.tot||1)?b:a),activeHours[0]):null;
+  const hourInsightCls=activeHours.length>=3?'warn':'neutral';
+  document.getElementById('insight-hour').className='psy-insight '+hourInsightCls;
+  document.getElementById('insight-hour').innerHTML=activeHours.length>=2
+    ?`${bestHour&&bestHour.tot>1?`<strong>Best hour: ${bestHour.h}:00</strong> — ${Math.round(bestHour.w/bestHour.tot*100)}% counter win rate (${bestHour.tot} trades). Your gut is most wrong here — ideal time to trade against yourself.`:'More data needed for best hour.'}<br>${worstHour&&worstHour.tot>1?`<strong>Worst hour: ${worstHour.h}:00</strong> — only ${Math.round(worstHour.w/worstHour.tot*100)}% counter win rate. Your instincts may be more reliable at this time — trade with more caution here.`:''}`
+    :'<span style="color:var(--muted)">Need trades across more hours for meaningful patterns.</span>';
+
+  // ── DAY OF WEEK CHART ──
+  const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dowData=Array(7).fill(null).map(()=>({w:0,l:0}));
+  closed.forEach(t=>{const d=new Date(t.openedAt||Date.now()).getDay();isWinTrade(t)?dowData[d].w++:dowData[d].l++;});
+  const activeDays=dowData.map((d,i)=>({d:i,...d,tot:d.w+d.l})).filter(x=>x.tot>0);
+  {
+    const ctx=document.getElementById('chart-dow').getContext('2d');
+    intelCharts.dow=new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:activeDays.map(x=>DAYS[x.d]),
+        datasets:[{
+          label:'Win Rate %',
+          data:activeDays.map(x=>x.tot?Math.round(x.w/x.tot*100):0),
+          backgroundColor:activeDays.map(x=>{const wr=x.tot?x.w/x.tot:0;return wr>=0.5?'rgba(0,217,139,0.7)':'rgba(255,61,95,0.7)';}),
+          borderColor:activeDays.map(x=>{const wr=x.tot?x.w/x.tot:0;return wr>=0.5?'#00d98b':'#ff3d5f';}),
+          borderWidth:1,borderRadius:3,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const d=activeDays[ctx.dataIndex];return`${ctx.raw}% win (${d.tot} trades)`;  }}}},
+        scales:{
+          x:{ticks:{color:'#6a6a8a',font:{size:9}},grid:{color:'#16161f'}},
+          y:{min:0,max:100,ticks:{color:'#6a6a8a',font:{size:9},callback:v=>v+'%'},grid:{color:'#16161f'}}
+        }
+      }
+    });
+  }
+  const bestDay=activeDays.length?activeDays.filter(x=>x.tot>0).reduce((a,b)=>b.w/b.tot>a.w/a.tot?b:a):null;
+  const worstDay=activeDays.length?activeDays.filter(x=>x.tot>0).reduce((a,b)=>b.w/b.tot<a.w/a.tot?b:a):null;
+  document.getElementById('insight-dow').className='psy-insight '+(activeDays.length>=3?'warn':'neutral');
+  document.getElementById('insight-dow').innerHTML=activeDays.length>=2
+    ?`<strong>${DAYS[bestDay.d]}</strong> is your strongest day — ${Math.round(bestDay.w/bestDay.tot*100)}% counter win rate. <strong>${DAYS[worstDay.d]}</strong> is weakest at ${Math.round(worstDay.w/worstDay.tot*100)}%. ${worstDay.d===5?'Friday weakness is common — end-of-week FOMO tends to produce better gut reads.':worstDay.d===1?'Monday weakness detected — possible overcaution or under-preparation at week open.':''}`
+    :'<span style="color:var(--muted)">Trade across more days to reveal weekly psychological patterns.</span>';
+
+  // ── TRADE VOLUME BY HOUR ──
+  const volByHour=Array(24).fill(0);
+  trades.forEach(t=>{if(t.openedAt) volByHour[new Date(t.openedAt).getHours()]++;});
+  const activeVolHours=volByHour.map((v,i)=>({h:i,v})).filter(x=>x.v>0);
+  {
+    const ctx=document.getElementById('chart-vol').getContext('2d');
+    intelCharts.vol=new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:activeVolHours.map(x=>x.h+'h'),
+        datasets:[{
+          label:'Trades',
+          data:activeVolHours.map(x=>x.v),
+          backgroundColor:activeVolHours.map(x=>x.v>=3?'rgba(255,61,95,0.7)':x.v===2?'rgba(255,176,32,0.7)':'rgba(77,159,255,0.5)'),
+          borderColor:activeVolHours.map(x=>x.v>=3?'#ff3d5f':x.v===2?'#ffb020':'#4d9fff'),
+          borderWidth:1,borderRadius:3,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw} trades logged`}}},
+        scales:{
+          x:{ticks:{color:'#6a6a8a',font:{size:9}},grid:{color:'#16161f'}},
+          y:{ticks:{color:'#6a6a8a',font:{size:9},stepSize:1},grid:{color:'#16161f'}}
+        }
+      }
+    });
+  }
+  const overtradingHours=activeVolHours.filter(x=>x.v>=3);
+  document.getElementById('insight-vol').className='psy-insight '+(overtradingHours.length?'bad':'good');
+  document.getElementById('insight-vol').innerHTML=overtradingHours.length
+    ?`<strong>Overtrading detected</strong> at ${overtradingHours.map(x=>x.h+':00').join(', ')} (3+ trades/hour). High trade frequency in a single hour is a reliable indicator of emotional state — frustration, FOMO, or revenge trading. Consider a hard cap of 2 trades per hour.`
+    :'<strong>No overtrading detected.</strong> Trade frequency appears controlled. Consistent volume across sessions suggests disciplined engagement rather than emotional spikes.';
+
+  // ── REVENGE TRADE DETECTION ──
+  const revengeTrades=[];
+  const sortedClosed=[...closed].sort((a,b)=>(a.closedAt||0)-(b.closedAt||0));
+  sortedClosed.forEach((t,i)=>{
+    if(i===0)return;
+    const prev=sortedClosed[i-1];
+    if(!isWinTrade(prev)&&prev.closedAt&&t.openedAt){
+      const gap=t.openedAt-prev.closedAt;
+      if(gap>0&&gap<600000) revengeTrades.push({trade:t,gapMin:Math.round(gap/60000)});
+    }
+  });
+  const revWins=revengeTrades.filter(r=>isWinTrade(r.trade)).length;
+  const revWR=revengeTrades.length?Math.round(revWins/revengeTrades.length*100):null;
+  document.getElementById('revenge-display').innerHTML=`
+    <div class="revenge-big ${revengeTrades.length>=3?'cr':revengeTrades.length>=1?'ca':'cg'}">${revengeTrades.length}</div>
+    <div class="revenge-meta">
+      Revenge trades detected<br>
+      (logged within 10min of a loss)<br>
+      ${revWR!=null?`Counter win rate on these: <strong style="color:${revWR>=50?'var(--green)':'var(--red)'}">${revWR}%</strong>`:''}
+    </div>`;
+  document.getElementById('insight-revenge').className='psy-insight '+(revengeTrades.length>=3?'bad':revengeTrades.length>=1?'warn':'good');
+  document.getElementById('insight-revenge').innerHTML=revengeTrades.length>=3
+    ?`<strong>Significant revenge trading pattern.</strong> ${revengeTrades.length} trades were logged within 10 minutes of a previous loss. Counter win rate on these: ${revWR}%. Revenge entries are typically the highest-quality counter signals — your gut is most reactive (and most wrong) immediately after a loss. Consider this a buy signal for the flip.`
+    :revengeTrades.length>=1
+    ?`<strong>${revengeTrades.length} possible revenge trade detected.</strong> Counter win rate: ${revWR}%. Monitor this pattern as trade volume grows.`
+    :'<strong>No revenge trading detected.</strong> You appear to be taking space between trades. This is a mark of emotional discipline.';
+
+  // ── DURATION ANALYSIS ──
+  const winDurs=closed.filter(isWinTrade).map(t=>t.openedAt&&t.closedAt?t.closedAt-t.openedAt:null).filter(x=>x!=null);
+  const lossDurs=closed.filter(t=>!isWinTrade(t)).map(t=>t.openedAt&&t.closedAt?t.closedAt-t.openedAt:null).filter(x=>x!=null);
+  const avgWinMs=winDurs.length?winDurs.reduce((a,b)=>a+b,0)/winDurs.length:null;
+  const avgLossMs=lossDurs.length?lossDurs.reduce((a,b)=>a+b,0)/lossDurs.length:null;
+  function msToStr(ms){if(!ms)return'—';const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);if(h>0)return h+'h '+m+'m';return m+'m';}
+  document.getElementById('dur-display').innerHTML=`
+    <div class="dur-col"><div class="dur-label" style="color:var(--green)">Avg Win Duration</div><div class="dur-val cg">${msToStr(avgWinMs)}</div></div>
+    <div class="dur-col"><div class="dur-label" style="color:var(--red)">Avg Loss Duration</div><div class="dur-val cr">${msToStr(avgLossMs)}</div></div>
+    <div class="dur-col"><div class="dur-label">All Trades</div><div class="dur-val">${msToStr(avgWinMs&&avgLossMs?(avgWinMs+avgLossMs)/2:avgWinMs||avgLossMs)}</div></div>`;
+  const durInsight=avgWinMs&&avgLossMs
+    ?(avgLossMs<avgWinMs
+      ?`<strong>Losses close faster than wins.</strong> Average loss: ${msToStr(avgLossMs)} vs average win: ${msToStr(avgWinMs)}. This could indicate premature stop outs or tight SLs cutting counter trades before they play out. Consider widening stops slightly or using trailing stops.`
+      :`<strong>Losses are held longer than wins.</strong> Average loss: ${msToStr(avgLossMs)} vs average win: ${msToStr(avgWinMs)}. Classic loss aversion pattern — cutting winners short and letting losers run. This is one of the most common and costly trading psychology errors. Set hard stop losses and defined targets.`)
+    :'<span style="color:var(--muted)">Need both wins and losses with timestamps to compare duration patterns.</span>';
+  document.getElementById('insight-dur').className='psy-insight '+(avgWinMs&&avgLossMs?(avgLossMs>avgWinMs?'bad':'good'):'neutral');
+  document.getElementById('insight-dur').innerHTML=durInsight;
+
+  // ── CUMULATIVE P&L CHART ──
+  const pnlTrades=closed.filter(t=>calcClosedPts(t)!=null).sort((a,b)=>(a.closedAt||0)-(b.closedAt||0));
+  let cumulative=0;
+  const cumulativeData=pnlTrades.map(t=>{const pts=calcClosedPts(t);cumulative+=pts||0;return{x:new Date(t.closedAt||Date.now()).toLocaleDateString(),y:+cumulative.toFixed(2),pts};});
+  {
+    const ctx=document.getElementById('chart-cumulative').getContext('2d');
+    if(cumulativeData.length>=2){
+      const isPositive=cumulative>=0;
+      intelCharts.cum=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:cumulativeData.map(x=>x.x),
+          datasets:[{
+            label:'Cumulative pts',
+            data:cumulativeData.map(x=>x.y),
+            borderColor:isPositive?'#00d98b':'#ff3d5f',
+            backgroundColor:isPositive?'rgba(0,217,139,0.08)':'rgba(255,61,95,0.08)',
+            borderWidth:2,fill:true,tension:0.3,
+            pointBackgroundColor:cumulativeData.map(x=>x.pts>=0?'#00d98b':'#ff3d5f'),
+            pointRadius:4,pointHoverRadius:6,
+          }]
+        },
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw>0?'+':''}${ctx.raw}pts cumulative`}}},
+          scales:{
+            x:{ticks:{color:'#6a6a8a',font:{size:9},maxTicksLimit:8},grid:{color:'#16161f'}},
+            y:{ticks:{color:'#6a6a8a',font:{size:9},callback:v=>v+'pts'},grid:{color:'#16161f'},
+              afterDataLimits:scale=>{const pad=(scale.max-scale.min)*0.1;scale.max+=pad;scale.min-=pad;}}
+          }
+        }
+      });
+      const trend=cumulativeData.length>=3?cumulativeData[cumulativeData.length-1].y-cumulativeData[Math.floor(cumulativeData.length/2)].y:null;
+      document.getElementById('insight-cumulative').className='psy-insight '+(cumulative>=0?'good':'bad');
+      document.getElementById('insight-cumulative').innerHTML=`Counter strategy is <strong>${cumulative>=0?'profitable':'in drawdown'}</strong> at ${cumulative>=0?'+':''}${cumulative.toFixed(2)}pts total across ${pnlTrades.length} trades.${trend!=null?' Recent half of trades: '+(trend>=0?'+':'')+trend.toFixed(2)+'pts — '+(trend>=0?'improving trajectory.':'deteriorating. Review recent entries for pattern changes.'):''}`;
+    }else{
+      document.getElementById('insight-cumulative').innerHTML='<div class="psy-na">Need 2+ closed trades with P&L to show trajectory.</div>';
+    }
+  }
+
+  // ── PSYCHOLOGICAL PATTERNS ──
+  const patterns=[];
+  const n=closed.length;
+  // 1. Conviction trap
+  const highConvLosses=closed.filter(t=>t.conviction>=4&&!isWinTrade(t)).length;
+  const highConvTotal=closed.filter(t=>t.conviction>=4).length;
+  const highConvLossRate=highConvTotal?Math.round(highConvLosses/highConvTotal*100):null;
+  if(highConvTotal>=2){
+    patterns.push({
+      icon:'🎯',name:'Conviction Trap',
+      severity:highConvLossRate>=60?'high':highConvLossRate>=40?'med':'low',
+      cardCls:highConvLossRate>=60?'alert':highConvLossRate>=40?'neutral':'good',
+      stat:highConvLossRate+'% of high-conviction (4-5) gut calls are countered wins',
+      desc:`You've logged <strong>${highConvTotal} high-conviction trades</strong> (conviction 4-5). The counter trade won <strong>${highConvLossRate}%</strong> of them. ${highConvLossRate>=60?'This is a significant finding — your strongest gut feelings are your most exploitable bias. The more certain you feel, the more likely you are wrong. Consider treating conviction 5 as an automatic reverse signal.':highConvLossRate>=40?'Moderate conviction trap. Your strong feelings are somewhat reliable, but still beggable more often than random.':'Your high conviction trades are actually holding up well. The counter strategy may not be as effective when you feel most certain.'}`,
+      conf:confidence(highConvTotal)
+    });
+  }
+  // 2. No SL pattern
+  const noSlLosses=closed.filter(t=>!t.sl&&!isWinTrade(t)).length;
+  const noSlTotal=closed.filter(t=>!t.sl).length;
+  if(noSlTotal>=2){
+    patterns.push({
+      icon:'🚫',name:'Missing Stop Loss',
+      severity:noSlLosses>=noSlTotal*0.5?'high':'med',
+      cardCls:noSlLosses>=noSlTotal*0.5?'alert':'neutral',
+      stat:`${noSlTotal} trades logged without a stop loss`,
+      desc:`<strong>${noSlTotal} trades</strong> had no SL defined. Of those, <strong>${noSlLosses} were losses</strong>. Without a stop loss the counter trade has unlimited downside. Even a wide SL forces pre-trade planning and reduces emotional decision-making at exit. Start setting SL levels before every trade.`,
+      conf:confidence(noSlTotal)
+    });
+  }
+  // 3. Session pattern
+  const amTrades=closed.filter(t=>{const h=new Date(t.openedAt||0).getHours();return h>=9&&h<12;});
+  const pmTrades=closed.filter(t=>{const h=new Date(t.openedAt||0).getHours();return h>=13&&h<16;});
+  const amWR=amTrades.length?Math.round(amTrades.filter(isWinTrade).length/amTrades.length*100):null;
+  const pmWR=pmTrades.length?Math.round(pmTrades.filter(isWinTrade).length/pmTrades.length*100):null;
+  if(amTrades.length>=2||pmTrades.length>=2){
+    const sessGap=amWR!=null&&pmWR!=null?Math.abs(amWR-pmWR):null;
+    patterns.push({
+      icon:'🕐',name:'Session Bias',
+      severity:sessGap>=30?'med':'low',
+      cardCls:sessGap>=30?'alert':'neutral',
+      stat:`AM session: ${amWR!=null?amWR+'%':'—'} · PM session: ${pmWR!=null?pmWR+'%':'—'} counter win rate`,
+      desc:`${amWR!=null&&pmWR!=null?`Your morning session (9-12) counter win rate is <strong>${amWR}%</strong> vs afternoon (1-4) at <strong>${pmWR}%</strong>. ${sessGap>=30?`A ${sessGap}pt gap suggests your gut is significantly more reliable in one session — consider concentrating your trading in the <strong>${amWR>pmWR?'afternoon':'morning'}</strong> where the counter flip is most effective.`:'Sessions are fairly balanced — no significant time-of-day bias detected yet.'}`:amWR!=null?`Morning session counter win rate: ${amWR}% (${amTrades.length} trades).`:pmWR!=null?`Afternoon session counter win rate: ${pmWR}% (${pmTrades.length} trades).`:''}`,
+      conf:confidence(Math.max(amTrades.length,pmTrades.length))
+    });
+  }
+  // 4. Streak behavior post-win
+  let prevWin=false,afterWinConv=[];
+  const sortedAll=[...trades].filter(t=>t.openedAt).sort((a,b)=>a.openedAt-b.openedAt);
+  sortedAll.forEach((t,i)=>{
+    if(i===0){prevWin=isWinTrade(t);return;}
+    if(prevWin) afterWinConv.push(t.conviction);
+    prevWin=isWinTrade(t);
+  });
+  const avgAfterWinConv=afterWinConv.length?afterWinConv.reduce((a,b)=>a+b,0)/afterWinConv.length:null;
+  if(avgAfterWinConv!=null&&afterWinConv.length>=3){
+    const overconfident=avgAfterWinConv>=3.5;
+    patterns.push({
+      icon:'📈',name:'Post-Win Overconfidence',
+      severity:overconfident?'med':'low',
+      cardCls:overconfident?'alert':'good',
+      stat:`Avg conviction after a win: ${avgAfterWinConv.toFixed(1)}/5`,
+      desc:`After winning counter trades, your next entry has an average conviction of <strong>${avgAfterWinConv.toFixed(1)}/5</strong>. ${overconfident?'This elevated conviction following wins is a classic overconfidence pattern. Winning streaks inflate confidence and lead to larger, more emotionally driven entries. Your highest-risk trades often follow your best ones.':'Post-win conviction appears controlled. You are not showing signs of overconfidence after successful counter flips.'}`,
+      conf:confidence(afterWinConv.length)
+    });
+  }
+  // 5. Early exit pattern
+  const effScores=closed.map(calcEfficiency).filter(x=>x!=null);
+  const avgEffScore=effScores.length?effScores.reduce((a,b)=>a+b,0)/effScores.length:null;
+  if(effScores.length>=3){
+    patterns.push({
+      icon:'⏱',name:'Exit Timing',
+      severity:avgEffScore<30?'high':avgEffScore<60?'med':'low',
+      cardCls:avgEffScore<30?'alert':avgEffScore<60?'neutral':'good',
+      stat:`Avg exit efficiency: ${avgEffScore.toFixed(0)}% of MFE captured`,
+      desc:`On average you exit capturing <strong>${avgEffScore.toFixed(0)}%</strong> of the maximum available profit (MFE). ${avgEffScore<30?'<strong>Critical:</strong> You are leaving most of the counter move on the table. This suggests either panic exits, poorly placed take profits, or no TP at all. Setting a TP at 70-80% of your estimated target gives the trade room to breathe while locking in most of the move.':avgEffScore<60?'Moderate exit efficiency. You are capturing roughly half the available move. Consider using trailing stops to ride profitable counter trades further instead of fixed exits.':'Strong exit efficiency. You are capturing a good portion of available moves — your exit discipline is solid.'}`,
+      conf:confidence(effScores.length)
+    });
+  }
+  // 6. Reason analysis — worst performing reason
+  const reasonGroups={};
+  closed.forEach(t=>{if(!reasonGroups[t.reason])reasonGroups[t.reason]={w:0,l:0};isWinTrade(t)?reasonGroups[t.reason].w++:reasonGroups[t.reason].l++;});
+  const worstReason=Object.entries(reasonGroups).filter(([,v])=>v.w+v.l>=2).sort((a,b)=>{const ra=a[1].w/(a[1].w+a[1].l),rb=b[1].w/(b[1].w+b[1].l);return rb-ra;})[0];
+  const bestReason=Object.entries(reasonGroups).filter(([,v])=>v.w+v.l>=2).sort((a,b)=>{const ra=a[1].w/(a[1].w+a[1].l),rb=b[1].w/(b[1].w+b[1].l);return ra-rb;})[0];
+  if(worstReason&&bestReason){
+    const worstWR=Math.round(worstReason[1].w/(worstReason[1].w+worstReason[1].l)*100);
+    const bestWR=Math.round(bestReason[1].w/(bestReason[1].w+bestReason[1].l)*100);
+    patterns.push({
+      icon:'💭',name:'Reason Quality',
+      severity:'info',cardCls:'neutral',
+      stat:`"${worstReason[0]}" leads to ${100-worstWR}% counter wins · "${bestReason[0]}" leads to ${100-bestWR}% counter wins`,
+      desc:`Your <strong>most counter-fadeable reason</strong> is "<strong>${worstReason[0]}</strong>" — when you tell yourself this, the counter wins ${worstWR}% of the time, meaning your read is mostly wrong. Your <strong>most reliable reason</strong> is "<strong>${bestReason[0]}</strong>" — only ${100-bestWR}% counter win rate, meaning your instinct here is more accurate. Trust your "${bestReason[0]}" gut less for fading, and lean into fading your "${worstReason[0]}" entries most aggressively.`,
+      conf:confidence(Math.max(worstReason[1].w+worstReason[1].l,bestReason[1].w+bestReason[1].l))
+    });
+  }
+
+  const sevOrder={high:0,med:1,low:2,info:3};
+  patterns.sort((a,b)=>sevOrder[a.severity]-sevOrder[b.severity]);
+  document.getElementById('patterns-grid').innerHTML=patterns.length
+    ?patterns.map(p=>`<div class="pattern-card ${p.cardCls}">
+        <div class="pattern-header">
+          <span class="pattern-icon">${p.icon}</span>
+          <span class="pattern-name">${p.name}</span>
+          <span class="pattern-severity sev-${p.severity}">${p.severity.toUpperCase()}</span>
+        </div>
+        <div class="pattern-stat ${p.cardCls==='alert'?'cr':p.cardCls==='good'?'cg':'ca'}">${p.stat}</div>
+        <div class="pattern-desc">${p.desc}</div>
+        <div class="confidence-bar"><div class="confidence-fill" style="width:${p.conf}%"></div></div>
+        <div class="confidence-label">Data confidence: ${p.conf}% (${p.conf<50?'low — log more trades':p.conf<80?'moderate':'high'})</div>
+      </div>`).join('')
+    :'<div style="color:var(--muted);font-size:11px;padding:20px 0">Log more trades to detect patterns. Minimum 2-3 closed trades per category needed.</div>';
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
