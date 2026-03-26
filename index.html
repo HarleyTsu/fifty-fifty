@@ -153,7 +153,19 @@ select option{background:var(--s3)}
 .qsell:hover{background:rgba(255,61,95,.2)}
 
 /* ── RIGHT PANEL ── */
-.log-right{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.log-right{display:flex;flex-direction:column;gap:0;height:100%;overflow:hidden}
+.log-positions-panel{overflow-y:auto;padding:14px;flex:1;border-bottom:1px solid var(--border);min-height:0}
+.log-markets-panel{height:220px;flex-shrink:0;background:var(--s2);overflow:hidden}
+.log-markets-title{font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;padding:8px 14px 4px;border-bottom:1px solid var(--border)}
+.mini-charts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;height:calc(100% - 28px)}
+.mini-chart-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:5px 7px;display:flex;flex-direction:column;gap:2px;overflow:hidden;cursor:default}
+.mini-chart-cell:nth-child(5n){border-right:none}
+.mc-sym{font-size:8px;color:var(--muted);letter-spacing:.05em;font-weight:500}
+.mc-price{font-size:11px;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
+.mc-chg{font-size:8px;font-weight:500}
+.mc-chg.up{color:var(--green)}.mc-chg.dn{color:var(--red)}.mc-chg.fl{color:var(--muted)}
+.mc-bar{height:28px;width:100%;margin-top:2px;position:relative;overflow:hidden}
+.mc-sparkline{width:100%;height:100%}
 .panel-title{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
 
 /* pending cards */
@@ -378,18 +390,15 @@ textarea.minput{resize:none;height:65px}
 .color-row{display:flex;align-items:center;gap:10px;font-size:11px}
 .color-swatch{width:14px;height:14px;border-radius:3px;flex-shrink:0}
 
-/* ── TOOLTIPS ── */
-[data-tip]{position:relative;cursor:help}
-[data-tip]::after{
-  content:attr(data-tip);
-  position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);
+/* ── TOOLTIPS — uses JS bubble to avoid overflow/overlap ── */
+[data-tip]{cursor:help}
+#tip-bubble{
+  position:fixed;z-index:99998;
   background:#1a1a2e;border:1px solid var(--border2);color:var(--text);
-  font-size:10px;line-height:1.5;padding:7px 10px;border-radius:6px;
-  white-space:nowrap;max-width:240px;white-space:normal;width:max-content;
-  pointer-events:none;opacity:0;transition:opacity .15s;z-index:9999;
-  font-family:var(--mono);font-weight:400;
+  font-size:10px;line-height:1.6;padding:7px 11px;border-radius:6px;
+  max-width:220px;pointer-events:none;opacity:0;transition:opacity .15s;
+  font-family:var(--mono);font-weight:400;display:none;
 }
-[data-tip]:hover::after{opacity:1}
 @media print{.ticker-wrap,.nav,.stats,.form-panel,.oc-actions,.p-actions,.exp-acts,.overlay,.toast,.dbtn,.dtoolbar{display:none!important}.page.active{height:auto;overflow:visible}}
 
 /* ── CHART PAGE ── */
@@ -438,6 +447,9 @@ textarea.minput{resize:none;height:65px}
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
+
+<!-- TOOLTIP BUBBLE -->
+<div id="tip-bubble"></div>
 
 <!-- WARNING MODAL -->
 <div id="warn-overlay">
@@ -539,8 +551,8 @@ textarea.minput{resize:none;height:65px}
   <div class="brand">
     <span class="nav-badge">● LIVE</span>
     <div class="brand-block">
-      <div class="b-sub">Fifty Fifty</div>
-      <div class="b-main"><span class="b-text">The Last Fifty</span><span class="b-tm">™</span></div>
+      <div class="b-sub" style="font-size:8px;margin-bottom:1px">THE LAST FIFTY™</div>
+      <div class="b-main"><span class="b-text">Fifty Fifty</span></div>
     </div>
   </div>
   <div class="nav-links">
@@ -696,8 +708,14 @@ textarea.minput{resize:none;height:65px}
 
   <!-- RIGHT PANEL -->
   <div class="log-right" id="log-right">
-    <div id="pending-section"></div>
-    <div id="open-section"></div>
+    <div class="log-positions-panel">
+      <div id="pending-section"></div>
+      <div id="open-section"></div>
+    </div>
+    <div class="log-markets-panel">
+      <div class="log-markets-title">MARKET WATCH — LIVE</div>
+      <div class="mini-charts-grid" id="mini-charts-grid"></div>
+    </div>
   </div>
 </div>
 
@@ -1938,14 +1956,121 @@ if(!sessionStorage.getItem('ff_warned')){
   document.getElementById('warn-overlay').style.display='none';
 }
 
+// ── TOOLTIP ENGINE (JS-based, avoids overflow) ────────────────────────────
+const tipBubble=document.getElementById('tip-bubble');
+let tipTimer=null;
+document.addEventListener('mouseover',e=>{
+  const el=e.target.closest('[data-tip]');
+  if(!el){hideTip();return;}
+  clearTimeout(tipTimer);
+  tipTimer=setTimeout(()=>showTip(el,e),400);
+});
+document.addEventListener('mousemove',e=>{
+  if(tipBubble.style.display==='block') moveTip(e);
+});
+document.addEventListener('mouseout',e=>{
+  if(!e.target.closest('[data-tip]')){clearTimeout(tipTimer);hideTip();}
+});
+function showTip(el,e){
+  tipBubble.textContent=el.dataset.tip;
+  tipBubble.style.display='block';
+  moveTip(e);
+  setTimeout(()=>{tipBubble.style.opacity='1';},10);
+}
+function moveTip(e){
+  const bw=tipBubble.offsetWidth,bh=tipBubble.offsetHeight;
+  let x=e.clientX+14,y=e.clientY-bh-10;
+  if(x+bw>window.innerWidth-8) x=e.clientX-bw-10;
+  if(y<8) y=e.clientY+18;
+  tipBubble.style.left=x+'px';tipBubble.style.top=y+'px';
+}
+function hideTip(){
+  tipBubble.style.opacity='0';
+  setTimeout(()=>{tipBubble.style.display='none';},150);
+}
+
+// ── MINI CHARTS (market watch panel) ─────────────────────────────────────
+const MINI_ASSETS=[
+  {sym:'ES=F',   label:'ES',      name:'S&P 500'},
+  {sym:'NQ=F',   label:'NQ',      name:'Nasdaq'},
+  {sym:'GC=F',   label:'GOLD',    name:'Gold'},
+  {sym:'SI=F',   label:'SILVER',  name:'Silver'},
+  {sym:'PL=F',   label:'PLAT',    name:'Platinum'},
+  {sym:'CL=F',   label:'CRUDE',   name:'Crude Oil'},
+  {sym:'NG=F',   label:'NAT GAS', name:'Nat Gas'},
+  {sym:'EURUSD=X',label:'EUR/USD',name:'Euro/USD'},
+  {sym:'GBPUSD=X',label:'GBP/USD',name:'Sterling'},
+  {sym:'USDJPY=X',label:'USD/JPY',name:'Dollar/Yen'},
+  {sym:'BTC-USD', label:'BTC',    name:'Bitcoin'},
+  {sym:'ETH-USD', label:'ETH',    name:'Ethereum'},
+  {sym:'SOL-USD', label:'SOL',    name:'Solana'},
+  {sym:'XRP-USD', label:'XRP',    name:'Ripple'},
+  {sym:'AUDUSD=X',label:'AUD/USD',name:'Aussie/USD'},
+];
+// Store last prices for mini chart sparklines
+const miniHistory={};
+
+function renderMiniCharts(){
+  const grid=document.getElementById('mini-charts-grid');
+  if(!grid)return;
+  grid.innerHTML=MINI_ASSETS.map(a=>{
+    const cur=gP(a.sym);
+    const prev=prevP[a.sym];
+    const chg=cur&&prev?cur-prev:0;
+    const chgPct=cur&&prev?((cur-prev)/prev*100):0;
+    const cls=chg>0?'up':chg<0?'dn':'fl';
+    const arrow=chg>0?'▲':chg<0?'▼':'';
+    const priceStr=cur?fmtP(cur,a.sym):'—';
+    const chgStr=cur&&prev?(arrow+' '+Math.abs(chgPct).toFixed(2)+'%'):'';
+    // Build mini sparkline from history
+    const hist=miniHistory[a.sym]||[];
+    const sparkSvg=buildSparkline(hist,chg>=0);
+    return`<div class="mini-chart-cell" data-tip="${a.name} — ${priceStr}">
+      <div class="mc-sym">${a.label}</div>
+      <div class="mc-price">${priceStr}</div>
+      <div class="mc-chg ${cls}">${chgStr}</div>
+      <div class="mc-bar">${sparkSvg}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildSparkline(hist,isUp){
+  if(hist.length<2) return'<svg class="mc-sparkline" viewBox="0 0 60 28"><line x1="0" y1="14" x2="60" y2="14" stroke="#2a2a3a" stroke-width="1"/></svg>';
+  const min=Math.min(...hist),max=Math.max(...hist);
+  const range=max-min||1;
+  const pts=hist.map((v,i)=>{
+    const x=(i/(hist.length-1))*60;
+    const y=28-((v-min)/range)*24-2;
+    return`${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const color=isUp?'#00d98b':'#ff3d5f';
+  return`<svg class="mc-sparkline" viewBox="0 0 60 28" preserveAspectRatio="none">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`;
+}
+
+// Update mini history on each price fetch
+const _origFetch=fetchPrices;
+// Hook into price update to also update mini charts
+function updateMiniHistory(){
+  MINI_ASSETS.forEach(a=>{
+    const p=gP(a.sym);
+    if(p==null)return;
+    if(!miniHistory[a.sym])miniHistory[a.sym]=[];
+    miniHistory[a.sym].push(p);
+    if(miniHistory[a.sym].length>30)miniHistory[a.sym].shift();
+  });
+  renderMiniCharts();
+}
+
 load();
 buildForm();
 buildConviction();
 renderStats();
 renderOpenPanel();
 updateTicker();
-fetchPrices();
-setInterval(fetchPrices,30000);
+fetchPrices().then(()=>updateMiniHistory());
+setInterval(()=>{fetchPrices().then(()=>updateMiniHistory());},30000);
 setInterval(()=>{renderOpenPanel();renderStats();updateLiveBadge();},60000);
 </script>
 
