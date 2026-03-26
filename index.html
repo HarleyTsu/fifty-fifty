@@ -333,6 +333,30 @@ textarea.minput{resize:none;height:65px}
 ::-webkit-scrollbar-track{background:var(--s1)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
+/* ── WARNING MODAL ── */
+#warn-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.warn-box{max-width:640px;width:92%;text-align:center;padding:0 20px}
+.warn-ticker-wrap{width:100%;overflow:hidden;background:rgba(255,61,95,.08);border:1px solid rgba(255,61,95,.25);border-radius:6px;padding:10px 0;margin-bottom:36px}
+.warn-ticker-inner{display:inline-flex;white-space:nowrap;animation:warn-scroll 18s linear infinite}
+.warn-ticker-inner:hover{animation-play-state:paused}
+@keyframes warn-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.warn-ticker-text{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--red);letter-spacing:.04em;padding:0 60px}
+.warn-ticker-text em{color:#fff;font-style:normal}
+.warn-logo{font-family:'Playfair Display',serif;font-size:15px;font-style:italic;color:var(--muted);margin-bottom:28px;letter-spacing:.02em}
+.warn-logo strong{color:var(--red);font-style:normal}
+.warn-headline{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px;letter-spacing:-.5px}
+.warn-headline span{color:var(--red)}
+.warn-sub{font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:32px;font-family:var(--mono)}
+.warn-sub strong{color:var(--text)}
+.warn-divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,61,95,.3),transparent);margin:0 0 28px}
+.warn-confirm-label{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.warn-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.warn-btn-yes{background:var(--red);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer;letter-spacing:.05em;transition:all .15s}
+.warn-btn-yes:hover{background:#cc2244;transform:scale(1.02)}
+.warn-btn-no{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:14px 28px;cursor:pointer;transition:all .15s}
+.warn-btn-no:hover{border-color:var(--muted);color:var(--text)}
+.warn-footer{font-size:9px;color:#3a3a55;margin-top:20px;font-family:var(--mono)}
+
 /* ── HELP PAGE ── */
 #page-help{padding:24px;max-width:900px;margin:0 auto}
 .help-section{margin-bottom:32px}
@@ -414,6 +438,42 @@ textarea.minput{resize:none;height:65px}
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
+
+<!-- WARNING MODAL -->
+<div id="warn-overlay">
+  <div class="warn-box">
+
+    <div class="warn-logo">The Last Fifty <strong>™</strong></div>
+
+    <div class="warn-ticker-wrap">
+      <div class="warn-ticker-inner">
+        <span class="warn-ticker-text">⚠ This is a <em>COUNTER</em> journal — put in your position and tab <em>OUT</em> &nbsp;·&nbsp; Do <em>NOT</em> mistake this for a regular paper trade journal &nbsp;·&nbsp; This is a <em>subconscious tool</em> for strategy adjustment &nbsp;·&nbsp; Use at your <em>discretion</em> &nbsp;·&nbsp;&nbsp;</span>
+        <span class="warn-ticker-text">⚠ This is a <em>COUNTER</em> journal — put in your position and tab <em>OUT</em> &nbsp;·&nbsp; Do <em>NOT</em> mistake this for a regular paper trade journal &nbsp;·&nbsp; This is a <em>subconscious tool</em> for strategy adjustment &nbsp;·&nbsp; Use at your <em>discretion</em> &nbsp;·&nbsp;&nbsp;</span>
+      </div>
+    </div>
+
+    <div class="warn-headline">This is <span>NOT</span> a<br>paper trade journal.</div>
+
+    <div class="warn-sub">
+      Log your position and <strong>tab out immediately.</strong><br>
+      This is a <strong>subconscious tool</strong> — not a simulation, not a sandbox.<br>
+      Every trade you log gets <strong>counter-flipped automatically.</strong><br>
+      Over time, your trade psychology will shift as you realize<br>
+      where your gut is consistently wrong.<br><br>
+      <strong>Use this tool to learn. Adjust accordingly. Trade better.</strong>
+    </div>
+
+    <div class="warn-divider"></div>
+
+    <div class="warn-confirm-label">Do you understand what this tool is?</div>
+    <div class="warn-btns">
+      <button class="warn-btn-yes" onclick="dismissWarning()">I UNDERSTAND — ENTER</button>
+      <button class="warn-btn-no" onclick="redirectOut()">I'm not ready — take me elsewhere</button>
+    </div>
+
+    <div class="warn-footer">By entering you acknowledge this is a counter-trade psychology tool, not financial advice.</div>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"><div id="tm"></div><div class="tsub" id="ts"></div></div>
@@ -1862,6 +1922,22 @@ function showToast(main,sub){
 // ══════════════════════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════════════════════
+// ── WARNING MODAL ────────────────────────────────────────────────────────────
+function dismissWarning(){
+  document.getElementById('warn-overlay').style.display='none';
+  // Remember for this session only — shows again on next visit
+  sessionStorage.setItem('ff_warned','1');
+}
+function redirectOut(){
+  window.location.href='https://z-lib.id/book/options-futures-and-other-derivatives-global-edition-64404';
+}
+// Show warning unless already confirmed this session
+if(!sessionStorage.getItem('ff_warned')){
+  document.getElementById('warn-overlay').style.display='flex';
+}else{
+  document.getElementById('warn-overlay').style.display='none';
+}
+
 load();
 buildForm();
 buildConviction();
