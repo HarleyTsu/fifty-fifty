@@ -223,6 +223,11 @@ tbody td{padding:7px 9px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .st-pending{color:var(--amber);animation:blink .8s infinite}
 .st-WIN,.st-TP{color:var(--green);font-weight:500}
 .st-LOSS,.st-SL{color:var(--red);font-weight:500}
+/* Original trades your-result colors */
+.yr-WIN{color:var(--green);font-weight:500}
+.yr-LOSS{color:var(--red);font-weight:500}
+.yr-OPEN{color:var(--amber)}
+.yr-PENDING{color:var(--amber);animation:blink .8s infinite}
 .cdots{display:flex;gap:2px}
 .cdot{width:5px;height:5px;border-radius:50%;background:var(--s4)}
 .cdot.on{background:var(--amber)}
@@ -413,6 +418,7 @@ textarea.minput{resize:none;height:65px}
     <button class="nl" onclick="goPage('journal',this)">▤ JOURNAL</button>
     <button class="nl" onclick="goPage('intel',this)">◈ COUNTER INTEL</button>
     <button class="nl" onclick="goPage('daily',this)">▦ DAILY LOG</button>
+    <button class="nl" onclick="goPage('original',this)">◎ ORIGINAL TRADES</button>
     <button class="nl" onclick="goPage('chart',this)">📊 CHART REPLAY</button>
     <button class="nl" onclick="goPage('help',this)">? HELP</button>
   </div>
@@ -683,6 +689,46 @@ textarea.minput{resize:none;height:65px}
   </div>
 </div>
 
+<!-- PAGE: ORIGINAL TRADES -->
+<div id="page-original" class="page">
+  <div style="padding:16px">
+    <div class="jfilters">
+      <select class="jfsel" id="of-res" onchange="renderOriginal()">
+        <option value="">All Results</option>
+        <option value="OPEN">Open</option>
+        <option value="PENDING">Pending</option>
+        <option value="WIN">Your Win</option>
+        <option value="LOSS">Your Loss</option>
+      </select>
+      <select class="jfsel" id="of-mkt" onchange="renderOriginal()">
+        <option value="">All Markets</option>
+        <option value="FUT">Futures</option>
+        <option value="COM">Commodities</option>
+        <option value="FOR">Forex</option>
+        <option value="CRY">Crypto</option>
+      </select>
+      <select class="jfsel" id="of-sort" onchange="renderOriginal()">
+        <option value="date">Latest First</option>
+        <option value="pnl">Best P&L</option>
+        <option value="conv">Conviction</option>
+      </select>
+      <span style="margin-left:auto;font-size:9px;color:var(--muted)" id="o-count"></span>
+    </div>
+
+    <!-- SUMMARY STRIP -->
+    <div id="orig-summary" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+
+    <div class="jtable"><table><thead><tr>
+      <th>Status</th><th>Type</th><th>Date</th><th>Mkt</th><th>Asset</th>
+      <th>Your Direction</th><th>TF</th>
+      <th>Entry</th><th>Exit</th><th>TP</th><th>SL</th>
+      <th>Live</th><th>Your P&L pts</th><th>Your P&L $</th>
+      <th>Your Result</th><th>Duration</th><th>Conv.</th><th>Note</th>
+    </tr></thead><tbody id="obody"></tbody></table>
+    <div class="empty" id="o-empty" style="display:none">No trades yet.</div></div>
+  </div>
+</div>
+
 <!-- MODALS -->
 <div class="overlay" id="qt-modal">
   <div class="mbox">
@@ -846,6 +892,7 @@ function goPage(p,el){
   if(p==='daily')renderDaily();
   if(p==='positions')renderPositions();
   if(p==='chart')renderChartList();
+  if(p==='original')renderOriginal();
 }
 function refreshActivePage(){const a=document.querySelector('.page.active');if(!a)return;const id=a.id;if(id==='page-log')renderOpenPanel();if(id==='page-positions')renderPositions();if(id==='page-journal')renderJournal();if(id==='page-intel')renderIntel();}
 
@@ -926,9 +973,9 @@ function submitTrade(){
   const counter=FLIP[curDir]||'SELL';const now=new Date();
   const date=`${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
   const base={sym,asset,tf,reason,market:curMkt,youSaid:curDir,counter,tp,sl,tickVal,conviction,orderType:curOrder,date,closedAt:null,mfe:0,mae:0,note:''};
-  if(curOrder==='MARKET'){const entry=parseFloat(document.getElementById('m-entry').value)||gP(sym);const size=parseFloat(document.getElementById('m-size').value)||null;trades.unshift({...base,id:Date.now().toString(),entry,exit:null,size,result:'OPEN',openedAt:Date.now(),mfe:0,mae:0});}
-  else if(curOrder==='LIMIT'||curOrder==='STOP'){const trigger=parseFloat(document.getElementById(curOrder==='LIMIT'?'l-trigger':'s-trigger').value);const size=parseFloat(document.getElementById(curOrder==='LIMIT'?'l-size':'s-size').value)||null;trades.unshift({...base,id:Date.now().toString(),entry:null,exit:null,size,triggerPrice:trigger,result:'PENDING',openedAt:null,pendingAt:Date.now()});}
-  else if(curOrder==='TRAIL'){const entry=gP(sym);const size=parseFloat(document.getElementById('tr-size').value)||null;const trailDist=parseFloat(document.getElementById('tr-dist').value);trades.unshift({...base,id:Date.now().toString(),entry,exit:null,size,trailDist,trailUnit:curUnit,trailPeak:entry,trailStop:null,result:'OPEN',openedAt:Date.now(),mfe:0,mae:0});}
+  if(curOrder==='MARKET'){const entry=parseFloat(document.getElementById('m-entry').value)||gP(sym);const size=parseFloat(document.getElementById('m-size').value)||1;trades.unshift({...base,id:Date.now().toString(),entry,exit:null,size,result:'OPEN',openedAt:Date.now(),mfe:0,mae:0});}
+  else if(curOrder==='LIMIT'||curOrder==='STOP'){const trigger=parseFloat(document.getElementById(curOrder==='LIMIT'?'l-trigger':'s-trigger').value);const size=parseFloat(document.getElementById(curOrder==='LIMIT'?'l-size':'s-size').value)||1;trades.unshift({...base,id:Date.now().toString(),entry:null,exit:null,size,triggerPrice:trigger,result:'PENDING',openedAt:null,pendingAt:Date.now()});}
+  else if(curOrder==='TRAIL'){const entry=gP(sym);const size=parseFloat(document.getElementById('tr-size').value)||1;const trailDist=parseFloat(document.getElementById('tr-dist').value);trades.unshift({...base,id:Date.now().toString(),entry,exit:null,size,trailDist,trailUnit:curUnit,trailPeak:entry,trailStop:null,result:'OPEN',openedAt:Date.now(),mfe:0,mae:0});}
   else if(curOrder==='LADDER'){const validLegs=ladderLegs.filter(l=>l.price&&l.size);const parentId='L'+Date.now();trades.unshift({...base,id:parentId,entry:null,exit:null,size:null,result:'OPEN',openedAt:Date.now(),isLadder:true,legs:validLegs.map((leg,i)=>({id:parentId+'_'+i,price:parseFloat(leg.price),size:parseFloat(leg.size),status:'PENDING',activatedAt:null,exit:null,result:'OPEN'}))});}
   save();renderOpenPanel();renderStats();clearForm();
   showToast({MARKET:'Market trade logged',LIMIT:'Limit order placed',STOP:'Stop order placed',TRAIL:'Trailing stop active',LADDER:'Ladder entry logged'}[curOrder],`${asset} · Counter: ${counter}`);
@@ -955,7 +1002,7 @@ function confirmQT(){
   if(!qtData)return;const{sym,asset,dir,price,market}=qtData;
   if(!price){showToast('No live price','');return;}
   const tp=parseFloat(document.getElementById('qt-tp').value)||null;const sl=parseFloat(document.getElementById('qt-sl').value)||null;
-  const size=parseFloat(document.getElementById('qt-size').value)||null;const tickVal=parseFloat(document.getElementById('qt-tick').value)||qtData.tickVal||null;
+  const size=parseFloat(document.getElementById('qt-size').value)||1;const tickVal=parseFloat(document.getElementById('qt-tick').value)||qtData.tickVal||null;
   const counter=FLIP[dir]||'SELL';const now=new Date();
   const date=`${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
   trades.unshift({id:Date.now().toString(),date,asset,sym,tf:'MARKET',reason:'Quick market order',market,youSaid:dir,counter,entry:price,exit:null,size,tickVal,tp,sl,conviction,orderType:'MARKET',result:'OPEN',openedAt:Date.now(),closedAt:null,mfe:0,mae:0,note:'Quick market order'});
@@ -1139,6 +1186,135 @@ function renderDaily(){
   const el=document.getElementById('daily-content');if(!trades.length){el.innerHTML='<div class="empty">No trades yet.</div>';return;}
   const byDay={};trades.forEach(t=>{const d=t.date.split(' ')[0];if(!byDay[d])byDay[d]=[];byDay[d].push(t);});
   el.innerHTML=Object.entries(byDay).map(([day,ts])=>{const wins=ts.filter(t=>t.result==='WIN'||t.result==='TP').length;const losses=ts.filter(t=>t.result==='LOSS'||t.result==='SL').length;const pusd=ts.map(t=>calcUsd(t,calcClosedPts(t))).filter(x=>x!=null);const dp=pusd.length?pusd.reduce((a,b)=>a+b,0):null;const tH=ts.map(t=>{const pts=calcClosedPts(t);const usd=calcUsdEnhanced(t,pts);const sc=t.result==='WIN'||t.result==='TP'?'cg':t.result==='LOSS'||t.result==='SL'?'cr':'ca';return`<div class="day-trade"><div><div style="font-size:12px;font-weight:500;color:#fff">${t.asset} <span class="otype o${t.orderType}" style="font-size:7px">${t.orderType}</span></div><div style="font-size:9px;color:var(--muted);margin-top:1px">${t.youSaid} → <span style="color:var(--red)">${t.counter}</span> · ${t.tf} · ${t.reason}</div></div><div style="margin-left:auto;display:flex;align-items:center;gap:10px">${pts!=null?`<span class="${pts>=0?'cg':'cr'}">${fmtPts(pts,t.sym)}</span>`:''} ${usd!=null?`<span class="${usd>=0?'cg':'cr'}">${fmtUsd(usd)}</span>`:''}<span class="${sc}" style="font-size:10px;font-weight:500">${t.result}</span></div></div>`;}).join('');return`<div class="day-group"><div class="day-hdr"><div class="day-date">${day}</div><span class="day-tag ${wins>losses?'dtw':losses>wins?'dtl':'dtn'}">${wins}W · ${losses}L</span>${dp!=null?`<span class="day-tag ${dp>=0?'dtw':'dtl'}">${fmtUsd(dp)}</span>`:''}<span style="font-size:10px;color:var(--muted)">${ts.length} trade${ts.length!==1?'s':''}</span></div>${tH}</div>`;}).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RENDER: ORIGINAL TRADES (your real trade — not the counter)
+// ══════════════════════════════════════════════════════════════════════════════
+let origExpandedId=null;
+
+function yourResult(t){
+  if(t.result==='OPEN') return 'OPEN';
+  if(t.result==='PENDING') return 'PENDING';
+  const pts=calcYourClosedPts(t);
+  if(pts==null) return '—';
+  return pts>0?'WIN':'LOSS';
+}
+
+function renderOriginal(){
+  const resFil=document.getElementById('of-res').value;
+  const mktFil=document.getElementById('of-mkt').value;
+  const srtFil=document.getElementById('of-sort').value;
+  let list=[...trades].filter(t=>!t.isLadder);
+  if(mktFil) list=list.filter(t=>t.market===mktFil);
+  if(resFil==='WIN')     list=list.filter(t=>yourResult(t)==='WIN');
+  else if(resFil==='LOSS')    list=list.filter(t=>yourResult(t)==='LOSS');
+  else if(resFil==='OPEN')    list=list.filter(t=>t.result==='OPEN');
+  else if(resFil==='PENDING') list=list.filter(t=>t.result==='PENDING');
+  if(srtFil==='pnl') list.sort((a,b)=>(calcYourClosedPts(b)||0)-(calcYourClosedPts(a)||0));
+  else if(srtFil==='conv') list.sort((a,b)=>b.conviction-a.conviction);
+  document.getElementById('o-count').textContent=list.length+' trades';
+  document.getElementById('o-empty').style.display=list.length?'none':'block';
+  // Summary strip
+  const closed=list.filter(t=>t.result!=='OPEN'&&t.result!=='PENDING');
+  const yourWins=closed.filter(t=>yourResult(t)==='WIN').length;
+  const yourLosses=closed.filter(t=>yourResult(t)==='LOSS').length;
+  const yourWR=(yourWins+yourLosses)?Math.round(yourWins/(yourWins+yourLosses)*100):null;
+  const yourPnlArr=closed.map(t=>calcUsdEnhanced(t,calcYourClosedPts(t))).filter(x=>x!=null);
+  const yourTotalUsd=yourPnlArr.length?yourPnlArr.reduce((a,b)=>a+b,0):null;
+  document.getElementById('orig-summary').innerHTML=[
+    {l:'Your Wins',v:yourWins,c:'cg'},{l:'Your Losses',v:yourLosses,c:'cr'},
+    {l:'Your Win Rate',v:yourWR!=null?yourWR+'%':'—',c:yourWR!=null&&yourWR>=50?'cg':'cr'},
+    {l:'Your Total P&L',v:yourTotalUsd!=null?fmtUsd(yourTotalUsd):'—',c:yourTotalUsd!=null&&yourTotalUsd>=0?'cg':'cr'},
+    {l:'Open',v:list.filter(t=>t.result==='OPEN').length,c:'ca'},
+  ].map(s=>`<div class="sc"><div class="sl">${s.l}</div><div class="sv ${s.c}">${s.v}</div></div>`).join('');
+  const tbody=document.getElementById('obody');tbody.innerHTML='';
+  list.forEach(t=>{
+    const isOpen=t.result==='OPEN',isPending=t.result==='PENDING';
+    const cur=isOpen&&t.sym?gP(t.sym):null;
+    const yourPts=isOpen?calcYourLivePnl(t):isPending?null:calcYourClosedPts(t);
+    const yourUsd=calcUsdEnhanced(t,yourPts);
+    const yRes=yourResult(t);
+    const yResCls=yRes==='WIN'?'yr-WIN':yRes==='LOSS'?'yr-LOSS':yRes==='OPEN'?'yr-OPEN':'yr-PENDING';
+    const statusCls=isPending?'st-pending':isOpen?'st-open':yourPts!=null&&yourPts>=0?'st-WIN':'st-LOSS';
+    const statusLabel=isPending?'PENDING':isOpen?'● OPEN':yRes;
+    const dots=Array.from({length:5},(_,i)=>`<div class="cdot${i<t.conviction?' on':''}"></div>`).join('');
+    const ms={FUT:'FUT',COM:'COM',FOR:'FX',CRY:'BTC'}[t.market]||t.market;
+    const tr=document.createElement('tr');
+    if(origExpandedId===t.id)tr.classList.add('expanded-row');
+    tr.innerHTML=`
+      <td class="${statusCls}">${statusLabel}</td>
+      <td><span class="otype o${t.orderType}">${t.orderType}</span></td>
+      <td>${t.date}</td>
+      <td><span class="mbadge m${t.market}">${ms}</span></td>
+      <td style="font-weight:500">${t.asset}</td>
+      <td style="color:#fff;font-weight:500">${t.youSaid}</td>
+      <td>${t.tf}</td>
+      <td>${t.entry!=null?fmtP(t.entry,t.sym):isPending?`<span class="ca">@ ${fmtP(t.triggerPrice,t.sym)}</span>`:'—'}</td>
+      <td>${t.exit!=null?fmtP(t.exit,t.sym):isOpen?'<span style="color:var(--amber)">Open</span>':isPending?'<span style="color:var(--amber)">Pending</span>':'—'}</td>
+      <td style="color:var(--green)">${t.tp?fmtP(t.tp,t.sym):'—'}</td>
+      <td style="color:var(--red)">${t.sl?fmtP(t.sl,t.sym):'—'}</td>
+      <td>${cur?fmtP(cur,t.sym):'—'}</td>
+      <td class="${yourPts!=null&&yourPts>=0?'cg':yourPts!=null?'cr':''}">${fmtPts(yourPts,t.sym)}</td>
+      <td class="${yourUsd!=null&&yourUsd>=0?'cg':yourUsd!=null?'cr':''}">${fmtUsd(yourUsd)}</td>
+      <td class="${yResCls}">${yRes}</td>
+      <td>${durStr(t)}</td>
+      <td><div class="cdots">${dots}</div></td>
+      <td style="color:var(--muted);max-width:90px;overflow:hidden;text-overflow:ellipsis;font-style:italic">${t.note||'—'}</td>`;
+    tr.addEventListener('click',()=>{origExpandedId=origExpandedId===t.id?null:t.id;renderOriginal();});
+    tbody.appendChild(tr);
+    if(origExpandedId===t.id){
+      const expTr=document.createElement('tr');expTr.className='exp-row';
+      const tv=getTickVal(t);const posVal=calcPositionValue(t);
+      const yPtsClosed=calcYourClosedPts(t);const yUsdClosed=calcUsdEnhanced(t,yPtsClosed);
+      expTr.innerHTML=`<td colspan="18"><div class="exp-inner" style="grid-template-columns:1fr 1fr 1fr">
+        <div>
+          <div class="exp-sec-title">Your Trade</div>
+          <div class="exp-row-item"><span class="exp-key">Direction</span><span style="color:#fff;font-weight:500">${t.youSaid}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Order Type</span><span><span class="otype o${t.orderType}">${t.orderType}</span></span></div>
+          <div class="exp-row-item"><span class="exp-key">Asset</span><span>${t.asset}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Timeframe</span><span>${t.tf}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Reason</span><span>${t.reason}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Conviction</span><span>${CONV[t.conviction]||t.conviction}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Opened</span><span>${t.date}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Closed</span><span>${t.closedAt?new Date(t.closedAt).toLocaleString():'<span style="color:var(--amber)">Still open</span>'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Duration</span><span>${durStr(t)}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Note</span><span style="color:var(--muted);font-style:italic">${t.note||'—'}</span></div>
+        </div>
+        <div>
+          <div class="exp-sec-title">Your Price & P&L</div>
+          <div class="exp-row-item"><span class="exp-key">Entry</span><span>${t.entry!=null?fmtP(t.entry,t.sym):'<span style="color:var(--amber)">Pending</span>'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Exit</span><span>${t.exit!=null?fmtP(t.exit,t.sym):'<span style="color:var(--amber)">Not closed</span>'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">TP Level</span><span style="color:var(--green)">${t.tp?fmtP(t.tp,t.sym):'Not set'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">SL Level</span><span style="color:var(--red)">${t.sl?fmtP(t.sl,t.sym):'Not set'}</span></div>
+          <div class="exp-row-item" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
+            <span class="exp-key">Size</span><span>${t.size!=null?t.size+' '+(t.market==='FOR'?'lot':t.market==='CRY'?'unit':'contract')+(t.size!==1?'s':''):'Not set'}</span>
+          </div>
+          <div class="exp-row-item"><span class="exp-key">Tick Value</span><span>${tv!=null?'$'+tv+'/pt':'Not set'}</span></div>
+          <div class="exp-row-item"><span class="exp-key">Position Value</span><span class="cb">${posVal!=null?'$'+posVal.toLocaleString('en-US',{maximumFractionDigits:0}):'Set size'}</span></div>
+          <div class="exp-row-item" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
+            <span class="exp-key" style="font-weight:500">Your P&L</span>
+            <span class="${yourPts!=null&&yourPts>=0?'cg':yourPts!=null?'cr':''}" style="font-size:13px;font-weight:500">${fmtPts(yourPts,t.sym)}${yUsdClosed!=null?' / '+fmtUsd(yUsdClosed):''}</span>
+          </div>
+          <div class="exp-row-item"><span class="exp-key">Your Result</span><span class="${yResCls}" style="font-weight:500">${yRes}</span></div>
+        </div>
+        <div>
+          <div class="exp-sec-title">Context</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.8;margin-bottom:10px">
+            You went <strong style="color:#fff">${t.youSaid}</strong> on <strong style="color:#fff">${t.asset}</strong> with <strong style="color:var(--amber)">${CONV[t.conviction]||t.conviction}</strong> conviction.<br>
+            Reason: <strong style="color:var(--text)">${t.reason}</strong>.<br>
+            ${yRes==='WIN'?'<span style="color:var(--green)">Your read was correct — price moved in your direction.</span>':yRes==='LOSS'?'<span style="color:var(--red)">Your read was wrong — price moved against you.</span>':yRes==='OPEN'?'<span style="color:var(--amber)">Trade still active.</span>':''}
+          </div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">
+            <div style="font-size:8px;color:var(--muted);letter-spacing:.08em;margin-bottom:6px">ABOUT THIS PAGE</div>
+            <div style="font-size:10px;color:var(--muted);line-height:1.7">These are <strong style="color:var(--text)">your original trades</strong> — the direction you chose, your real P&L. The Journal tab shows the counter (flipped) stats. This page is purely about <strong style="color:var(--text)">your real positions</strong>.</div>
+          </div>
+          <div class="exp-acts"><button class="ea note" onclick="openNoteModal('${t.id}')">Edit Note</button></div>
+        </div>
+      </div></td>`;
+      tbody.appendChild(expTr);
+    }
+  });
 }
 
 function renderStats(){
