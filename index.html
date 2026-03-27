@@ -4,6 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fifty Fifty — The Last Fifty™</title>
+<script>
+// Gate: runs before ANY other code. If not warned, replace entire document.
+if(!sessionStorage.getItem('ff_warned')){
+  document.addEventListener('DOMContentLoaded',function(){
+    // Hide entire body, show only warning
+    document.body.style.visibility='hidden';
+    // Build warning as a real document overlay using native DOM
+    var gate=document.createElement('div');
+    gate.id='ff-gate';
+    gate.style.cssText='position:fixed;inset:0;background:#09090f;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:monospace;padding:20px;box-sizing:border-box';
+    gate.innerHTML=`
+      <div style="color:#6a6a8a;font-size:13px;font-style:italic;margin-bottom:24px;font-family:Georgia,serif">The Last Fifty ™</div>
+      <div style="background:rgba(255,61,95,.08);border:1px solid rgba(255,61,95,.3);border-radius:6px;padding:10px 0;width:100%;max-width:640px;overflow:hidden;margin-bottom:28px">
+        <marquee style="color:#ff3d5f;font-size:12px;font-weight:bold;letter-spacing:.04em">⚠ This is a COUNTER journal — put in your position and tab OUT &nbsp;·&nbsp; Do NOT mistake this for a regular paper trade journal &nbsp;·&nbsp; Subconscious tool for strategy adjustment &nbsp;·&nbsp; Use at your discretion</marquee>
+      </div>
+      <div style="font-family:Arial Black,sans-serif;font-size:32px;font-weight:900;color:#fff;text-align:center;line-height:1.2;margin-bottom:12px">This is <span style="color:#ff3d5f">NOT</span> a<br>paper trade journal.</div>
+      <div style="font-size:11px;color:#6a6a8a;line-height:1.9;text-align:center;margin-bottom:28px;max-width:500px">
+        Log your position and <strong style="color:#e0e0f0">tab out immediately.</strong><br>
+        This is a <strong style="color:#e0e0f0">subconscious tool</strong> — not a simulation, not a sandbox.<br>
+        Every trade you log gets <strong style="color:#e0e0f0">counter-flipped automatically.</strong><br>
+        Over time your trade psychology will shift as you realize where your gut is consistently wrong.<br><br>
+        <strong style="color:#e0e0f0">Use this tool to learn. Adjust accordingly. Trade better.</strong>
+      </div>
+      <div style="height:1px;width:100%;max-width:500px;background:linear-gradient(to right,transparent,rgba(255,61,95,.4),transparent);margin-bottom:24px"></div>
+      <div style="font-size:9px;color:#6a6a8a;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px">Do you understand what this tool is?</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <button id="ff-gate-yes" style="background:#ff3d5f;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer;letter-spacing:.05em;font-family:Arial,sans-serif">I UNDERSTAND — ENTER</button>
+        <button id="ff-gate-no" style="background:none;border:1px solid #3a3a55;border-radius:8px;color:#6a6a8a;font-size:11px;padding:14px 28px;cursor:pointer;font-family:monospace">I'm not ready — take me elsewhere</button>
+      </div>
+      <div style="font-size:9px;color:#3a3a55;margin-top:20px">By entering you acknowledge this is a counter-trade psychology tool, not financial advice.</div>
+    `;
+    document.body.appendChild(gate);
+    document.body.style.visibility='visible';
+    document.getElementById('ff-gate-yes').onclick=function(){
+      sessionStorage.setItem('ff_warned','1');
+      gate.style.opacity='0';gate.style.transition='opacity .3s';
+      setTimeout(function(){gate.remove();},300);
+    };
+    document.getElementById('ff-gate-no').onclick=function(){
+      window.location.href='https://z-lib.id/book/options-futures-and-other-derivatives-global-edition-64404';
+    };
+  });
+}
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Playfair+Display:ital,wght@1,900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -399,37 +443,27 @@ textarea.minput{resize:none;height:65px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ── WARNING MODAL ── */
-#warn-overlay{
-  position:fixed;inset:0;
-  background:#09090f;
-  z-index:999999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  overflow:hidden;
-}
-.warn-box{max-width:640px;width:92%;text-align:center;padding:0 20px}
-.warn-ticker-wrap{width:100%;overflow:hidden;background:rgba(255,61,95,.08);border:1px solid rgba(255,61,95,.25);border-radius:6px;padding:10px 0;margin-bottom:36px}
-.warn-ticker-inner{display:inline-flex;white-space:nowrap;animation:warn-scroll 18s linear infinite}
+
+
+
 .warn-ticker-inner:hover{animation-play-state:paused}
-@keyframes warn-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.warn-ticker-text{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--red);letter-spacing:.04em;padding:0 60px}
+100%{transform:translateX(-50%)}}
+
 .warn-ticker-text em{color:#fff;font-style:normal}
-.warn-logo{font-family:'Playfair Display',serif;font-size:15px;font-style:italic;color:var(--muted);margin-bottom:28px;letter-spacing:.02em}
+
 .warn-logo strong{color:var(--red);font-style:normal}
-.warn-headline{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px;letter-spacing:-.5px}
+
 .warn-headline span{color:var(--red)}
-.warn-sub{font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:32px;font-family:var(--mono)}
+
 .warn-sub strong{color:var(--text)}
-.warn-divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,61,95,.3),transparent);margin:0 0 28px}
-.warn-confirm-label{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
-.warn-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.warn-btn-yes{background:var(--red);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer!important;letter-spacing:.05em;transition:all .15s;pointer-events:all!important;user-select:none;-webkit-tap-highlight-color:transparent}
-.warn-btn-yes:hover{background:#cc2244;transform:scale(1.02)}
-.warn-btn-no{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:14px 28px;cursor:pointer!important;transition:all .15s;pointer-events:all!important;user-select:none}
-.warn-btn-no:hover{border-color:var(--muted);color:var(--text)}
-.warn-footer{font-size:9px;color:#3a3a55;margin-top:20px;font-family:var(--mono)}
+
+
+
+
+
+
+
+
 
 /* ── HELP PAGE ── */
 #page-help{padding:24px;max-width:900px;margin:0 auto}
@@ -586,94 +620,6 @@ textarea.minput{resize:none;height:65px}
 
 <!-- TOOLTIP BUBBLE -->
 <div id="tip-bubble"></div>
-
-<!-- WARNING MODAL -->
-<div id="warn-overlay">
-  <div class="warn-box">
-
-    <div class="warn-logo">The Last Fifty <strong>™</strong></div>
-
-    <div class="warn-ticker-wrap">
-      <div class="warn-ticker-inner">
-        <span class="warn-ticker-text">⚠ This is a <em>COUNTER</em> journal — put in your position and tab <em>OUT</em> &nbsp;·&nbsp; Do <em>NOT</em> mistake this for a regular paper trade journal &nbsp;·&nbsp; This is a <em>subconscious tool</em> for strategy adjustment &nbsp;·&nbsp; Use at your <em>discretion</em> &nbsp;·&nbsp;&nbsp;</span>
-        <span class="warn-ticker-text">⚠ This is a <em>COUNTER</em> journal — put in your position and tab <em>OUT</em> &nbsp;·&nbsp; Do <em>NOT</em> mistake this for a regular paper trade journal &nbsp;·&nbsp; This is a <em>subconscious tool</em> for strategy adjustment &nbsp;·&nbsp; Use at your <em>discretion</em> &nbsp;·&nbsp;&nbsp;</span>
-      </div>
-    </div>
-
-    <div class="warn-headline">This is <span>NOT</span> a<br>paper trade journal.</div>
-
-    <div class="warn-sub">
-      Log your position and <strong>tab out immediately.</strong><br>
-      This is a <strong>subconscious tool</strong> — not a simulation, not a sandbox.<br>
-      Every trade you log gets <strong>counter-flipped automatically.</strong><br>
-      Over time, your trade psychology will shift as you realize<br>
-      where your gut is consistently wrong.<br><br>
-      <strong>Use this tool to learn. Adjust accordingly. Trade better.</strong>
-    </div>
-
-    <div class="warn-divider"></div>
-
-    <div class="warn-confirm-label">Do you understand what this tool is?</div>
-    <div class="warn-btns">
-      <button class="warn-btn-yes" id="btn-warn-yes">I UNDERSTAND — ENTER</button>
-      <button class="warn-btn-no" id="btn-warn-no">I'm not ready — take me elsewhere</button>
-    </div>
-
-    <div class="warn-footer">By entering you acknowledge this is a counter-trade psychology tool, not financial advice.</div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"><div id="tm"></div><div class="tsub" id="ts"></div></div>
-
-<!-- NOTE MODAL -->
-<div class="overlay" id="note-modal">
-  <div class="mbox">
-    <div class="mtitle" id="note-title">Add Note</div>
-    <div class="mfield"><div class="mlabel">Note</div><textarea class="minput" id="note-text" placeholder="What happened? What did you observe?"></textarea></div>
-    <div class="macts"><button class="msave" onclick="saveNote()">Save</button><button class="mcancel" onclick="closeM('note-modal')">Cancel</button></div>
-  </div>
-</div>
-
-<!-- EXIT MODAL -->
-<div class="overlay" id="exit-modal">
-  <div class="mbox">
-    <div class="mtitle" id="exit-title">Close Trade</div>
-    <div class="mfield">
-      <div class="mlabel">Exit Price</div>
-      <input type="number" class="minput" id="exit-price" step="any" oninput="previewClose()">
-    </div>
-    <div id="exit-preview" style="background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-top:8px;display:none">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
-        <span style="color:var(--muted)">P&L Points</span><span id="ep-pts" style="font-weight:500">—</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
-        <span style="color:var(--muted)">P&L Dollars</span><span id="ep-usd" style="font-weight:500">—</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px">
-        <span style="color:var(--muted)">Result</span><span id="ep-result" style="font-weight:500">—</span>
-      </div>
-    </div>
-    <div class="macts">
-      <button class="msave" onclick="doClose()">Confirm Close</button>
-      <button class="mcancel" onclick="closeM('exit-modal')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- QUICK TRADE MODAL -->
-<div class="overlay" id="qt-modal">
-  <div class="mbox">
-    <div class="mtitle" id="qt-title">Quick Market Order</div>
-    <div class="qt-price" id="qt-price">—</div>
-    <div class="qt-sub" id="qt-sub"></div>
-    <div class="mfield"><div class="mlabel">Take Profit (optional)</div><input type="number" class="minput" id="qt-tp" step="any" placeholder="TP price" style="border-color:rgba(0,217,139,.3)"></div>
-    <div class="mfield"><div class="mlabel">Stop Loss (optional)</div><input type="number" class="minput" id="qt-sl" step="any" placeholder="SL price" style="border-color:rgba(255,61,95,.3)"></div>
-    <div class="mfield"><div class="mlabel">Size / Contracts</div><input type="number" class="minput" id="qt-size" step="any" placeholder="1" min="0"></div>
-    <div class="mfield"><div class="mlabel">Tick Value ($) <span id="qt-tick-hint" style="color:var(--muted);font-size:9px"></span></div><input type="number" class="minput" id="qt-tick" step="any" placeholder="e.g. 10" min="0"></div>
-    <div class="macts"><button class="msave" onclick="confirmQT()">Log Trade</button><button class="mcancel" onclick="closeM('qt-modal')">Cancel</button></div>
-  </div>
-</div>
 
 <!-- TICKER -->
 <div class="ticker-wrap">
@@ -2808,36 +2754,7 @@ function showToast(main,sub){
 // ══════════════════════════════════════════════════════════════════════════════
 // ── WARNING MODAL ────────────────────────────────────────────────────────────
 // Warning handled by inline IIFE above
-// Warning gate — blocks entire app until confirmed
-(function(){
-  const warned=sessionStorage.getItem('ff_warned');
-  const overlay=document.getElementById('warn-overlay');
-  if(!overlay)return;
-  if(warned){overlay.remove();return;}
-  // Block scroll on body while warning shows
-  document.body.style.overflow='hidden';
-  overlay.style.display='flex';
-  // Attach listeners after a short delay to ensure DOM is fully painted
-  setTimeout(function(){
-    const btnYes=document.getElementById('btn-warn-yes');
-    const btnNo=document.getElementById('btn-warn-no');
-    if(btnYes){
-      btnYes.onclick=null;
-      btnYes.addEventListener('click',function(){
-        sessionStorage.setItem('ff_warned','1');
-        overlay.style.opacity='0';
-        overlay.style.transition='opacity .3s';
-        setTimeout(function(){overlay.remove();document.body.style.overflow='';},300);
-      },true);
-    }
-    if(btnNo){
-      btnNo.onclick=null;
-      btnNo.addEventListener('click',function(){
-        window.location.href='https://z-lib.id/book/options-futures-and-other-derivatives-global-edition-64404';
-      },true);
-    }
-  },500);
-})();
+
 
 // ── TOOLTIP ENGINE (JS-based, avoids overflow) ────────────────────────────
 const tipBubble=document.getElementById('tip-bubble');
