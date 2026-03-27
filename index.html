@@ -1244,19 +1244,31 @@ const gP=sym=>liveP[sym]??null;
 // ══════════════════════════════════════════════════════════════════════════════
 function processPending(){
   let changed=false;
+  const NOW=Date.now();
   trades.filter(t=>t.result==='PENDING').forEach(t=>{
-    const cur=gP(t.sym);if(cur==null)return;
+    const cur=gP(t.sym);if(cur==null||!t.triggerPrice)return;
+    // Guard: must have been pending at least 30 seconds — prevents immediate trigger
+    // from price feed reading at the exact moment of order placement
+    if(t.pendingAt&&(NOW-t.pendingAt)<30000)return;
     const bull=t.youSaid==='BUY'||t.youSaid==='LONG';
+    // Buffer: 0.01% of trigger price to avoid hair-trigger on feed noise
+    const buf=t.triggerPrice*0.0001;
     if(t.orderType==='LIMIT'){
-      // Limit BUY: activate when price drops to or below trigger
-      // Limit SELL: activate when price rises to or above trigger
-      const hit=bull?cur<=t.triggerPrice:cur>=t.triggerPrice;
-      if(hit){t.result='OPEN';t.entry=t.triggerPrice;t.openedAt=Date.now();changed=true;showToast('Limit Order Activated',t.asset+' @ '+fmtP(t.triggerPrice,t.sym));}
+      // LIMIT BUY activates when price falls TO or BELOW trigger (you want to buy cheaper)
+      // LIMIT SELL activates when price rises TO or ABOVE trigger (you want to sell higher)
+      const hit=bull?cur<=(t.triggerPrice+buf):cur>=(t.triggerPrice-buf);
+      if(hit){
+        t.result='OPEN';t.entry=t.triggerPrice;t.openedAt=NOW;changed=true;
+        showToast('Limit Activated',t.asset+' @ '+fmtP(t.triggerPrice,t.sym));
+      }
     }else if(t.orderType==='STOP'){
-      // Stop BUY: activate on breakout above trigger
-      // Stop SELL: activate on breakout below trigger
-      const hit=bull?cur>=t.triggerPrice:cur<=t.triggerPrice;
-      if(hit){t.result='OPEN';t.entry=t.triggerPrice;t.openedAt=Date.now();changed=true;showToast('Stop Order Triggered',t.asset+' @ '+fmtP(t.triggerPrice,t.sym));}
+      // STOP BUY activates when price breaks ABOVE trigger (momentum entry)
+      // STOP SELL activates when price breaks BELOW trigger
+      const hit=bull?cur>=(t.triggerPrice-buf):cur<=(t.triggerPrice+buf);
+      if(hit){
+        t.result='OPEN';t.entry=t.triggerPrice;t.openedAt=NOW;changed=true;
+        showToast('Stop Triggered',t.asset+' @ '+fmtP(t.triggerPrice,t.sym));
+      }
     }
   });
   if(changed){save();renderOpenPanel();renderStats();}
@@ -1267,19 +1279,57 @@ function processPending(){
 // ══════════════════════════════════════════════════════════════════════════════
 function checkTPSL(){
   let ch=false;
+  const NOW=Date.now();
+
   trades.filter(t=>t.result==='OPEN').forEach(t=>{
-    const cur=gP(t.sym);if(cur==null||t.entry==null)return;
-    const bull=t.counter==='LONG'||t.counter==='BUY';
-    if(t.tp!=null&&(bull?cur>=t.tp:cur<=t.tp)){t.result='TP';t.exit=t.tp;t.closedAt=Date.now();ch=true;showToast('✓ TP HIT',t.asset+' counter hit take profit!');}
-    if(t.sl!=null&&(bull?cur<=t.sl:cur>=t.sl)){t.result='SL';t.exit=t.sl;t.closedAt=Date.now();ch=true;showToast('⚠ SL HIT',t.asset+' counter stopped out');}
-    // MFE / MAE tracking — counter P&L
+    // ── GUARD 1: must have entry price and live price ──
+    const cur=gP(t.sym);
+    if(cur==null||t.entry==null)return;
+
+    // ── GUARD 2: minimum 90 seconds since trade opened ──
+    // Prevents immediate false triggers from feed noise at entry
+    if(t.openedAt&&(NOW-t.openedAt)<90000)return;
+
+    // ── GUARD 3: determine TP/SL direction from price levels relative to entry ──
+    // Do NOT rely on counter direction alone — derive from where levels were set.
+    // TP above entry = counter is LONG (profits on up move), trigger when cur >= tp
+    // TP below entry = counter is SHORT (profits on down move), trigger when cur <= tp
+    // SL is always on the opposite side of TP from entry.
+    const tpAboveEntry=t.tp!=null&&t.tp>t.entry;
+    const tpBelowEntry=t.tp!=null&&t.tp<t.entry;
+    const slAboveEntry=t.sl!=null&&t.sl>t.entry;
+    const slBelowEntry=t.sl!=null&&t.sl<t.entry;
+
+    // ── GUARD 4: price tolerance buffer — 0.03% beyond level to avoid feed noise ──
+    // For gold at 4500 this is ~1.35pts buffer — meaningful, not hair-trigger
+    const buf=t.entry*0.0003;
+
+    // ── TP CHECK ──
+    if(t.tp!=null&&t.result==='OPEN'){
+      const tpHit=tpAboveEntry?(cur>=t.tp+buf):tpBelowEntry?(cur<=t.tp-buf):false;
+      if(tpHit){
+        t.result='TP';t.exit=t.tp;t.closedAt=NOW;ch=true;
+        showToast('✓ TP HIT',t.asset+' +'+Math.abs(t.tp-t.entry).toFixed(2)+'pts');
+      }
+    }
+
+    // ── SL CHECK ──
+    if(t.sl!=null&&t.result==='OPEN'){
+      const slHit=slAboveEntry?(cur>=t.sl+buf):slBelowEntry?(cur<=t.sl-buf):false;
+      if(slHit){
+        t.result='SL';t.exit=t.sl;t.closedAt=NOW;ch=true;
+        showToast('⚠ SL HIT',t.asset+' -'+Math.abs(t.sl-t.entry).toFixed(2)+'pts');
+      }
+    }
+
+    // ── MFE / MAE TRACKING ──
     const pts=calcLivePnl(t);
     if(pts!=null){
-      if(t.mfe===null||t.mfe===undefined||pts>t.mfe) t.mfe=pts;
-      if(t.mae===null||t.mae===undefined||pts<t.mae) t.mae=pts;
-      ch=true; // save progress
+      if(t.mfe===null||t.mfe===undefined||pts>t.mfe){t.mfe=pts;ch=true;}
+      if(t.mae===null||t.mae===undefined||pts<t.mae){t.mae=pts;ch=true;}
     }
   });
+
   if(ch){save();renderOpenPanel();renderStats();}
 }
 
@@ -1288,32 +1338,43 @@ function checkTPSL(){
 // ══════════════════════════════════════════════════════════════════════════════
 function updateTrailing(){
   let ch=false;
+  const NOW=Date.now();
   trades.filter(t=>t.result==='OPEN'&&t.orderType==='TRAIL').forEach(t=>{
     const cur=gP(t.sym);if(cur==null||t.entry==null)return;
-    const bull=t.counter==='LONG'||t.counter==='BUY';
-    // Calculate trail distance in price units
-    let dist=t.trailDist;
+    // Guard: 90 second minimum before trailing stop can fire
+    if(t.openedAt&&(NOW-t.openedAt)<90000)return;
+    // Derive direction from price: if entry went up from trail peak perspective
+    // Use counter direction but also validate against entry
+    const counterBull=t.counter==='LONG'||t.counter==='BUY';
+    // Calculate trail distance
+    let dist=t.trailDist||0;
     if(t.trailUnit==='pct') dist=t.entry*(t.trailDist/100);
-    // Update peak
-    if(t.trailPeak==null) t.trailPeak=cur;
-    if(bull&&cur>t.trailPeak) t.trailPeak=cur;
-    if(!bull&&cur<t.trailPeak) t.trailPeak=cur;
-    // Calculate trailing stop level
-    const stopLevel=bull?t.trailPeak-dist:t.trailPeak+dist;
-    t.trailStop=stopLevel;
-    // Check if stop hit
-    const hit=bull?cur<=stopLevel:cur>=stopLevel;
+    if(!dist||dist<=0)return;
+    // Update peak — trail peak follows price in the favorable direction
+    if(t.trailPeak==null) t.trailPeak=t.entry;
+    if(counterBull&&cur>t.trailPeak) t.trailPeak=cur;
+    if(!counterBull&&cur<t.trailPeak) t.trailPeak=cur;
+    // Trailing stop level
+    const stopLevel=counterBull?t.trailPeak-dist:t.trailPeak+dist;
+    t.trailStop=+stopLevel.toFixed(5);
+    // Buffer: 0.02% to avoid noise triggers
+    const buf=t.entry*0.0002;
+    const hit=counterBull?cur<=(stopLevel-buf):cur>=(stopLevel+buf);
     if(hit){
-      const pts=bull?cur-t.entry:t.entry-cur;
-      t.result=pts>=0?'WIN':'LOSS';
-      t.exit=cur;t.closedAt=Date.now();ch=true;
-      showToast('Trailing Stop Closed',t.asset+' '+(pts>=0?'+':'')+pts.toFixed(2)+'pts');
+      const counterPts=counterBull?cur-t.entry:t.entry-cur;
+      t.result=counterPts>=0?'WIN':'LOSS';
+      t.exit=cur;t.closedAt=NOW;ch=true;
+      const yourPts=counterBull?t.entry-cur:cur-t.entry;
+      showToast(
+        'Trailing Stop Closed — Counter '+(counterPts>=0?'WIN':'LOSS'),
+        t.asset+' CTR: '+(counterPts>=0?'+':'')+counterPts.toFixed(2)+'pts'
+      );
     }
-    // update mfe/mae
+    // MFE/MAE
     const livePts=calcLivePnl(t);
     if(livePts!=null){
-      if(t.mfe===null||t.mfe===undefined||livePts>t.mfe) t.mfe=livePts;
-      if(t.mae===null||t.mae===undefined||livePts<t.mae) t.mae=livePts;
+      if(t.mfe===null||t.mfe===undefined||livePts>t.mfe){t.mfe=livePts;ch=true;}
+      if(t.mae===null||t.mae===undefined||livePts<t.mae){t.mae=livePts;ch=true;}
     }
   });
   if(ch){save();renderOpenPanel();renderStats();}
@@ -1523,32 +1584,79 @@ function removeLeg(i){ladderLegs.splice(i,1);renderLadderLegs();}
 // ══════════════════════════════════════════════════════════════════════════════
 function validate(){
   const errs=[];
+  const warns=[];
   const fa=document.getElementById('f-asset');
   if(!fa.value){errs.push('Select an asset');}
   if(!curDir){errs.push('Select a direction');}
+
+  // Get the entry price (actual or intended)
+  let entryForValidation=null;
   if(curOrder==='MARKET'){
-    const ep=parseFloat(document.getElementById('m-entry').value)||gP(fa.value);
-    if(!ep){errs.push('Market order needs a live price or manual entry price');}
+    entryForValidation=parseFloat(document.getElementById('m-entry').value)||gP(fa.value);
+    if(!entryForValidation){errs.push('Market order needs a live price or manual entry price.');}
   }
   if(curOrder==='LIMIT'){
-    if(!parseFloat(document.getElementById('l-trigger').value)){errs.push('Limit order requires a trigger price');}
+    entryForValidation=parseFloat(document.getElementById('l-trigger').value);
+    if(!entryForValidation){errs.push('Limit order requires a trigger price.');}
   }
   if(curOrder==='STOP'){
-    if(!parseFloat(document.getElementById('s-trigger').value)){errs.push('Stop order requires a breakout price');}
+    entryForValidation=parseFloat(document.getElementById('s-trigger').value);
+    if(!entryForValidation){errs.push('Stop order requires a breakout price.');}
   }
   if(curOrder==='TRAIL'){
-    if(!parseFloat(document.getElementById('tr-dist').value)){errs.push('Trailing stop requires a trail distance');}
+    if(!parseFloat(document.getElementById('tr-dist').value)){errs.push('Trailing stop requires a trail distance.');}
   }
   if(curOrder==='LADDER'){
     const validLegs=ladderLegs.filter(l=>l.price&&l.size);
-    if(!validLegs.length){errs.push('Ladder needs at least one leg with a price and size');}
+    if(!validLegs.length){errs.push('Ladder needs at least one leg with a price and size.');}
   }
+
+  // ── TP/SL SANITY CHECK vs entry price ──
+  // This prevents the most common mistake: setting SL on wrong side of entry
+  if(entryForValidation){
+    const counter=FLIP[curDir]||'SELL';
+    const counterBull=counter==='LONG'||counter==='BUY';
+    const tp=parseFloat(document.getElementById('f-tp').value)||null;
+    const sl=parseFloat(document.getElementById('f-sl').value)||null;
+
+    if(tp!=null){
+      // Counter LONG/BUY: TP must be ABOVE entry (price needs to go up to profit)
+      // Counter SHORT/SELL: TP must be BELOW entry (price needs to go down to profit)
+      const tpWrongSide=counterBull?(tp<=entryForValidation):(tp>=entryForValidation);
+      if(tpWrongSide){
+        errs.push(`Take Profit is on the wrong side of entry. Counter is ${counter} — TP must be ${counterBull?'ABOVE':'BELOW'} entry (${entryForValidation}). Your TP: ${tp}.`);
+      }
+    }
+    if(sl!=null){
+      // Counter LONG/BUY: SL must be BELOW entry (stops out if price falls)
+      // Counter SHORT/SELL: SL must be ABOVE entry (stops out if price rises)
+      const slWrongSide=counterBull?(sl>=entryForValidation):(sl<=entryForValidation);
+      if(slWrongSide){
+        errs.push(`Stop Loss is on the wrong side of entry. Counter is ${counter} — SL must be ${counterBull?'BELOW':'ABOVE'} entry (${entryForValidation}). Your SL: ${sl}.`);
+      }
+    }
+    if(tp!=null&&sl!=null&&!errs.length){
+      // Warn if R:R is worse than 1:1
+      const gain=Math.abs(tp-entryForValidation);
+      const risk=Math.abs(sl-entryForValidation);
+      if(risk>gain){warns.push(`R:R is ${(gain/risk).toFixed(2)} — risking more than you stand to gain. Consider widening TP or tightening SL.`);}
+    }
+  }
+
   const box=document.getElementById('val-errors');
   if(errs.length){
-    box.innerHTML=errs.map(e=>`<div class="val-err-item">${e}</div>`).join('');
+    box.innerHTML=errs.map(e=>`<div class="val-err-item">${e}</div>`).join('')+
+      (warns.length?warns.map(w=>`<div class="val-err-item" style="color:var(--amber);border-color:var(--amber)">${w}</div>`).join(''):'');
     box.classList.add('show');return false;
   }
-  box.classList.remove('show');return true;
+  if(warns.length){
+    box.innerHTML=warns.map(w=>`<div class="val-err-item" style="color:var(--amber)">${w}</div>`).join('');
+    box.classList.add('show');
+    // Warnings don't block — just show and allow log
+  }else{
+    box.classList.remove('show');
+  }
+  return true;
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1576,7 +1684,7 @@ function submitTrade(){
   else if(curOrder==='LIMIT'||curOrder==='STOP'){
     const trigger=parseFloat(document.getElementById(curOrder==='LIMIT'?'l-trigger':'s-trigger').value);
     const size=parseFloat(document.getElementById(curOrder==='LIMIT'?'l-size':'s-size').value)||null;
-    trades.unshift({...base,id:Date.now().toString(),entry:null,exit:null,size,triggerPrice:trigger,result:'PENDING',openedAt:null});
+    trades.unshift({...base,id:Date.now().toString(),entry:null,exit:null,size,triggerPrice:trigger,result:'PENDING',openedAt:null,pendingAt:Date.now()});
   }
   else if(curOrder==='TRAIL'){
     const entry=gP(sym);
