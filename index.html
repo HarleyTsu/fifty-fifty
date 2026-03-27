@@ -4,50 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fifty Fifty — The Last Fifty™</title>
-<script>
-// Gate: runs before ANY other code. If not warned, replace entire document.
-if(!sessionStorage.getItem('ff_warned')){
-  document.addEventListener('DOMContentLoaded',function(){
-    // Hide entire body, show only warning
-    document.body.style.visibility='hidden';
-    // Build warning as a real document overlay using native DOM
-    var gate=document.createElement('div');
-    gate.id='ff-gate';
-    gate.style.cssText='position:fixed;inset:0;background:#09090f;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:monospace;padding:20px;box-sizing:border-box';
-    gate.innerHTML=`
-      <div style="color:#6a6a8a;font-size:13px;font-style:italic;margin-bottom:24px;font-family:Georgia,serif">The Last Fifty ™</div>
-      <div style="background:rgba(255,61,95,.08);border:1px solid rgba(255,61,95,.3);border-radius:6px;padding:10px 0;width:100%;max-width:640px;overflow:hidden;margin-bottom:28px">
-        <marquee style="color:#ff3d5f;font-size:12px;font-weight:bold;letter-spacing:.04em">⚠ This is a COUNTER journal — put in your position and tab OUT &nbsp;·&nbsp; Do NOT mistake this for a regular paper trade journal &nbsp;·&nbsp; Subconscious tool for strategy adjustment &nbsp;·&nbsp; Use at your discretion</marquee>
-      </div>
-      <div style="font-family:Arial Black,sans-serif;font-size:32px;font-weight:900;color:#fff;text-align:center;line-height:1.2;margin-bottom:12px">This is <span style="color:#ff3d5f">NOT</span> a<br>paper trade journal.</div>
-      <div style="font-size:11px;color:#6a6a8a;line-height:1.9;text-align:center;margin-bottom:28px;max-width:500px">
-        Log your position and <strong style="color:#e0e0f0">tab out immediately.</strong><br>
-        This is a <strong style="color:#e0e0f0">subconscious tool</strong> — not a simulation, not a sandbox.<br>
-        Every trade you log gets <strong style="color:#e0e0f0">counter-flipped automatically.</strong><br>
-        Over time your trade psychology will shift as you realize where your gut is consistently wrong.<br><br>
-        <strong style="color:#e0e0f0">Use this tool to learn. Adjust accordingly. Trade better.</strong>
-      </div>
-      <div style="height:1px;width:100%;max-width:500px;background:linear-gradient(to right,transparent,rgba(255,61,95,.4),transparent);margin-bottom:24px"></div>
-      <div style="font-size:9px;color:#6a6a8a;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px">Do you understand what this tool is?</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-        <button id="ff-gate-yes" style="background:#ff3d5f;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer;letter-spacing:.05em;font-family:Arial,sans-serif">I UNDERSTAND — ENTER</button>
-        <button id="ff-gate-no" style="background:none;border:1px solid #3a3a55;border-radius:8px;color:#6a6a8a;font-size:11px;padding:14px 28px;cursor:pointer;font-family:monospace">I'm not ready — take me elsewhere</button>
-      </div>
-      <div style="font-size:9px;color:#3a3a55;margin-top:20px">By entering you acknowledge this is a counter-trade psychology tool, not financial advice.</div>
-    `;
-    document.body.appendChild(gate);
-    document.body.style.visibility='visible';
-    document.getElementById('ff-gate-yes').onclick=function(){
-      sessionStorage.setItem('ff_warned','1');
-      gate.style.opacity='0';gate.style.transition='opacity .3s';
-      setTimeout(function(){gate.remove();},300);
-    };
-    document.getElementById('ff-gate-no').onclick=function(){
-      window.location.href='https://z-lib.id/book/options-futures-and-other-derivatives-global-edition-64404';
-    };
-  });
-}
-</script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Playfair+Display:ital,wght@1,900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
