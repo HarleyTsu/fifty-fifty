@@ -499,80 +499,80 @@ textarea.minput{resize:none;height:65px}
 
 /* ── CHART PAGE ── */
 #page-chart{padding:0}
+#page-chart.active{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 120px)}
+
+/* ── CHART PAGE ── */
+#page-chart{padding:0}
 #page-chart.active{display:grid;grid-template-columns:280px 1fr;grid-template-rows:auto 1fr;height:calc(100vh - 120px)}
 
-/* Chart tabs */
-.chart-page-tabs{display:flex;background:var(--s2);border-bottom:1px solid var(--border)}
-.cpt{flex:1;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.cpt:hover{color:var(--text)}
-.cpt.active{color:#fff;border-bottom-color:var(--red)}
-.cpt.active.pla-tab{border-bottom-color:var(--red)}
-.pla-badge{background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-weight:700;animation:blink .8s infinite;display:none}
-.pla-badge.show{display:inline-block}
+
+
+
+
+
+
+
 
 /* Post-Loss Analysis panel */
-#pla-panel{display:none;height:100%;overflow:hidden;flex-direction:column}
-#pla-panel.active{display:flex}
-.pla-layout{display:grid;grid-template-columns:240px 1fr;height:100%;overflow:hidden}
-.pla-sidebar{background:var(--s1);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
-.pla-sidebar-title{font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
-.pla-session-card{background:var(--s2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:6px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .12s}
-.pla-session-card:hover{background:var(--s3)}
-.pla-session-card.active{background:rgba(255,61,95,.08);border-color:var(--red)}
-.pla-session-asset{font-size:12px;font-weight:500;color:#fff}
-.pla-session-date{font-size:9px;color:var(--muted);margin-top:2px}
-.pla-session-loss{font-size:10px;color:var(--red);font-weight:500;margin-top:2px}
-.pla-main{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px}
-.pla-empty{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:10px;color:var(--muted);font-size:12px}
 
-/* Sequence cards */
-.seq-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.seq-card.seq-loss{border-left:4px solid var(--red)}
-.seq-card.seq-win{border-left:4px solid var(--green)}
-.seq-card.seq-open{border-left:4px solid var(--amber)}
-.seq-card.seq-origin{border-left:4px solid var(--red);border-top:2px solid var(--red)}
-.seq-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--s2);border-bottom:1px solid var(--border)}
-.seq-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.seq-num.loss{background:rgba(255,61,95,.2);color:var(--red)}
-.seq-num.win{background:rgba(0,217,139,.2);color:var(--green)}
-.seq-num.origin{background:var(--red);color:#fff}
-.seq-num.open{background:rgba(255,176,32,.2);color:var(--amber)}
-.seq-asset{font-size:13px;font-weight:500;color:#fff}
-.seq-meta{font-size:9px;color:var(--muted);margin-top:2px}
-.seq-result-badge{margin-left:auto;font-size:9px;padding:3px 8px;border-radius:4px;font-weight:500}
-.srb-loss{background:rgba(255,61,95,.15);color:var(--red)}
-.srb-win{background:rgba(0,217,139,.15);color:var(--green)}
-.srb-open{background:rgba(255,176,32,.15);color:var(--amber)}
-.seq-gap{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:9px;color:var(--muted);background:var(--bg)}
-.seq-gap-line{flex:1;height:1px;background:var(--border)}
-.seq-gap.revenge{color:var(--red)}
-.seq-gap.revenge .seq-gap-line{background:rgba(255,61,95,.3)}
 
-/* Market state banner */
-.market-state-banner{display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:11px;font-weight:500;border-bottom:1px solid var(--border)}
-.msb-trending-up{background:rgba(0,217,139,.08);color:var(--green);border-color:rgba(0,217,139,.2)}
-.msb-trending-dn{background:rgba(255,61,95,.08);color:var(--red);border-color:rgba(255,61,95,.2)}
-.msb-ranging{background:rgba(255,176,32,.08);color:var(--amber);border-color:rgba(255,176,32,.2)}
-.msb-unknown{background:var(--s2);color:var(--muted)}
-.msb-icon{font-size:16px}
-.msb-label{font-weight:700;letter-spacing:.05em}
-.msb-desc{font-size:10px;opacity:.8}
 
-/* Sequence chart */
-.seq-chart-wrap{position:relative;height:260px;background:var(--bg)}
-.seq-chart-tf{display:flex;gap:3px;padding:6px 10px;background:var(--s2);border-bottom:1px solid var(--border)}
-.seq-tf-btn{padding:3px 8px;border-radius:3px;border:1px solid var(--border);background:var(--s3);color:var(--muted);font-family:var(--mono);font-size:9px;cursor:pointer;transition:all .12s}
-.seq-tf-btn.active{border-color:var(--border2);color:#fff;background:var(--s2)}
-.seq-stats-row{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid var(--border)}
-.seq-stat{flex:1;min-width:80px;padding:8px 12px;border-right:1px solid var(--border);text-align:center}
-.seq-stat:last-child{border-right:none}
-.seq-stat-label{font-size:7px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
-.seq-stat-val{font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}
-.seq-insight{padding:10px 14px;font-size:10px;color:var(--text);line-height:1.8;background:var(--s2);border-top:1px solid var(--border)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .seq-insight strong{color:#fff}
-.seq-insight.insight-bad{border-left:3px solid var(--red);background:rgba(255,61,95,.04)}
-.seq-insight.insight-warn{border-left:3px solid var(--amber);background:rgba(255,176,32,.04)}
-.seq-insight.insight-good{border-left:3px solid var(--green);background:rgba(0,217,139,.04)}
+
+
+
 .chart-list{background:var(--s1);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
 .chart-list-title{font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
 .chart-trade-card{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .12s;border-left:3px solid var(--border)}
@@ -1542,7 +1542,7 @@ function goPage(p,el){
   if(p==='intel')renderIntel();
   if(p==='daily')renderDaily();
   if(p==='positions')renderPositions();
-  if(p==='chart'){renderChartList();renderPLASessions();}
+  if(p==='chart'){renderChartList();}
   if(p==='chart'){renderChartList();}
 }
 
@@ -2907,73 +2907,43 @@ setInterval(()=>{renderOpenPanel();renderStats();updateLiveBadge();},60000);
 
 <!-- PAGE: CHART REPLAY -->
 <div id="page-chart" class="page">
-
-  <!-- TAB SWITCHER -->
-  <div class="chart-page-tabs" style="grid-column:1/-1;grid-row:1">
-    <button class="cpt active" id="cpt-replay" onclick="switchChartTab('replay')">📊 TRADE REPLAY</button>
-    <button class="cpt pla-tab" id="cpt-pla" onclick="switchChartTab('pla')">
-      ⚠ POST-LOSS ANALYSIS <span class="pla-badge" id="pla-badge">NEW</span>
-    </button>
+  <div class="chart-list">
+    <div class="chart-list-title">SELECT A TRADE</div>
+    <div id="chart-trade-list"><div style="color:var(--muted);font-size:11px">No trades yet</div></div>
   </div>
-
-  <!-- TAB 1: TRADE REPLAY -->
-  <div id="replay-panel" style="display:contents;grid-row:2">
-    <div class="chart-list">
-      <div class="chart-list-title">SELECT A TRADE</div>
-      <div id="chart-trade-list"><div style="color:var(--muted);font-size:11px">No trades yet</div></div>
+  <div class="chart-main" id="chart-main">
+    <div class="chart-empty" id="chart-empty">
+      <div style="font-size:28px">📊</div>
+      <div>Select a trade to view the chart</div>
     </div>
-    <div class="chart-main" id="chart-main">
-      <div class="chart-empty" id="chart-empty">
-        <div style="font-size:28px">📊</div>
-        <div>Select a trade to view the chart</div>
+    <div id="chart-active" style="display:none;flex-direction:column;height:100%">
+      <div class="chart-toolbar">
+        <div>
+          <div class="chart-asset-name" id="chart-asset-name">—</div>
+          <div class="chart-asset-price" id="chart-asset-price">—</div>
+        </div>
+        <div class="tf-btns">
+          <button class="tf-btn" onclick="setChartTF('1m',this)">1m</button>
+          <button class="tf-btn" onclick="setChartTF('5m',this)">5m</button>
+          <button class="tf-btn active" onclick="setChartTF('15m',this)">15m</button>
+          <button class="tf-btn" onclick="setChartTF('1H',this)">1H</button>
+          <button class="tf-btn" onclick="setChartTF('4H',this)">4H</button>
+          <button class="tf-btn" onclick="setChartTF('1D',this)">1D</button>
+        </div>
       </div>
-      <div id="chart-active" style="display:none;flex-direction:column;height:100%">
-        <div class="chart-toolbar">
-          <div>
-            <div class="chart-asset-name" id="chart-asset-name">—</div>
-            <div class="chart-asset-price" id="chart-asset-price">—</div>
-          </div>
-          <div class="tf-btns">
-            <button class="tf-btn" onclick="setChartTF('1m',this)">1m</button>
-            <button class="tf-btn" onclick="setChartTF('5m',this)">5m</button>
-            <button class="tf-btn active" onclick="setChartTF('15m',this)">15m</button>
-            <button class="tf-btn" onclick="setChartTF('1H',this)">1H</button>
-            <button class="tf-btn" onclick="setChartTF('4H',this)">4H</button>
-            <button class="tf-btn" onclick="setChartTF('1D',this)">1D</button>
-          </div>
-        </div>
-        <div class="chart-legend-bar" id="chart-legend"></div>
-        <div class="chart-container">
-          <div id="tv-chart"></div>
-          <div class="chart-loading" id="chart-loading" style="display:none">Loading candles...</div>
-        </div>
-        <div class="chart-stats">
-          <div class="chart-stats-grid">
-            <div class="csg-col"><div class="csg-title yours">YOUR TRADE</div><div class="csg-rows" id="csg-yours"></div></div>
-            <div class="csg-col"><div class="csg-title counter">COUNTER TRADE (THE FLIP)</div><div class="csg-rows" id="csg-counter"></div></div>
-          </div>
+      <div class="chart-legend-bar" id="chart-legend"></div>
+      <div class="chart-container">
+        <div id="tv-chart"></div>
+        <div class="chart-loading" id="chart-loading" style="display:none">Loading candles...</div>
+      </div>
+      <div class="chart-stats">
+        <div class="chart-stats-grid">
+          <div class="csg-col"><div class="csg-title yours">YOUR TRADE</div><div class="csg-rows" id="csg-yours"></div></div>
+          <div class="csg-col"><div class="csg-title counter">COUNTER TRADE (THE FLIP)</div><div class="csg-rows" id="csg-counter"></div></div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- TAB 2: POST-LOSS ANALYSIS -->
-  <div id="pla-panel" style="grid-column:1/-1;display:none;height:calc(100vh - 156px)">
-    <div class="pla-layout">
-      <div class="pla-sidebar">
-        <div class="pla-sidebar-title">LOSS SESSIONS</div>
-        <div id="pla-session-list"><div style="color:var(--muted);font-size:11px">No losses recorded yet.<br>Take a loss to begin analysis.</div></div>
-      </div>
-      <div class="pla-main" id="pla-main">
-        <div class="pla-empty" id="pla-empty">
-          <div style="font-size:36px">📉</div>
-          <div style="font-weight:500;color:var(--text)">No loss session selected</div>
-          <div>Select a loss from the sidebar to analyze your post-loss trading behavior</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 
@@ -3218,313 +3188,18 @@ function renderTradeStats(t){
   document.getElementById('csg-counter').innerHTML=statItem('Direction',t.counter,'cr')+statItem('Entry',t.entry!=null?fmtP(t.entry,t.sym):'—')+statItem('Exit',t.exit!=null?fmtP(t.exit,t.sym):t.result==='OPEN'?'Open':'—')+statItem('P&L pts',fmtPts(counterPts,t.sym),counterPts!=null&&counterPts>=0?'cg':counterPts!=null?'cr':'ca')+statItem('P&L $',fmtUsd(counterUsd),counterUsd!=null&&counterUsd>=0?'cg':counterUsd!=null?'cr':'ca')+statItem('Result',counterResult,counterResult==='WIN'||counterResult==='TP'?'cg':counterResult==='LOSS'||counterResult==='SL'?'cr':'ca')+statItem('MFE',t.mfe!=null?fmtPts(t.mfe,t.sym):'—','cg')+statItem('MAE',t.mae!=null?fmtPts(t.mae,t.sym):'—','cr')+statItem('R:R Actual',arr||'—',arr&&parseFloat(arr.split(':')[1])>=1?'cg':'cr')+statItem('Conviction',(t.conviction||0)+'/5','cp');
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CHART TAB SWITCHER
-// ══════════════════════════════════════════════════════════════════════════════
-let activeChartTab='replay';
-function switchChartTab(tab){
-  activeChartTab=tab;
-  document.getElementById('cpt-replay').classList.toggle('active',tab==='replay');
-  document.getElementById('cpt-pla').classList.toggle('active',tab==='pla');
-  document.getElementById('replay-panel').style.display=tab==='replay'?'contents':'none';
-  document.getElementById('pla-panel').style.display=tab==='pla'?'flex':'none';
-  if(tab==='pla'){
-    document.getElementById('pla-badge').classList.remove('show');
-    renderPLASessions();
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-// POST-LOSS ANALYSIS ENGINE
-// ══════════════════════════════════════════════════════════════════════════════
-let plaSessionId=null;
-const plaCharts={};
-
-// Called whenever a trade is marked LOSS or SL — trigger the badge
-function triggerPLABadge(){
-  const badge=document.getElementById('pla-badge');
-  if(badge)badge.classList.add('show');
-}
-
-// Build loss sessions — each loss + next 5 trades after it
-function buildPLASessions(){
-  const lossTrades=trades.filter(t=>(t.result==='LOSS'||t.result==='SL')&&t.closedAt).sort((a,b)=>b.closedAt-a.closedAt);
-  return lossTrades.map(loss=>{
-    const lossTime=loss.closedAt||0;
-    // Get next 5 trades AFTER this loss by open time
-    const after=trades
-      .filter(t=>t.id!==loss.id&&t.openedAt&&t.openedAt>lossTime)
-      .sort((a,b)=>a.openedAt-b.openedAt)
-      .slice(0,5);
-    return{loss,sequence:after,id:loss.id};
-  });
-}
-
-function renderPLASessions(){
-  const sessions=buildPLASessions();
-  const sidebar=document.getElementById('pla-session-list');
-  if(!sessions.length){
-    sidebar.innerHTML='<div style="color:var(--muted);font-size:11px">No losses recorded yet.<br>Take a loss to begin analysis.</div>';
-    return;
-  }
-  sidebar.innerHTML=sessions.map(s=>{
-    const pts=calcClosedPts(s.loss);
-    const sel=plaSessionId===s.id?' active':'';
-    return`<div class="pla-session-card${sel}" onclick="loadPLASession('${s.id}')">
-      <div class="pla-session-asset">${s.loss.asset}</div>
-      <div class="pla-session-date">${s.loss.date} · ${s.loss.tf}</div>
-      <div class="pla-session-loss">Loss: ${fmtPts(pts,s.loss.sym)} · ${s.sequence.length} trades after</div>
-    </div>`;
-  }).join('');
-  // Auto-select most recent if none selected
-  if(!plaSessionId&&sessions.length){loadPLASession(sessions[0].id);}
-}
-
-async function loadPLASession(id){
-  plaSessionId=id;
-  renderPLASessions();
-  const sessions=buildPLASessions();
-  const session=sessions.find(s=>s.id===id);
-  if(!session)return;
-  const main=document.getElementById('pla-main');
-  document.getElementById('pla-empty').style.display='none';
-  main.innerHTML='<div style="color:var(--muted);font-size:11px;padding:20px 0">Loading sequence charts...</div>';
-  // Destroy old pla charts
-  Object.values(plaCharts).forEach(c=>{try{c.remove();}catch(e){}});
-  for(const k in plaCharts)delete plaCharts[k];
-
-  const fullSeq=[{...session.loss,_isOrigin:true},...session.sequence];
-  let html='';
-  fullSeq.forEach((t,i)=>{
-    const isOrigin=t._isOrigin;
-    const resultCls=isOrigin?'seq-origin':t.result==='WIN'||t.result==='TP'?'seq-win':t.result==='LOSS'||t.result==='SL'?'seq-loss':'seq-open';
-    const numCls=isOrigin?'origin':t.result==='WIN'||t.result==='TP'?'win':t.result==='LOSS'||t.result==='SL'?'loss':'open';
-    const resLabel=isOrigin?'LOSS (TRIGGER)':t.result;
-    const resBadgeCls=t.result==='WIN'||t.result==='TP'?'srb-win':t.result==='LOSS'||t.result==='SL'?'srb-loss':'srb-open';
-    // Time gap from previous
-    let gapHtml='';
-    if(i>0){
-      const prev=fullSeq[i-1];
-      const gapMs=(t.openedAt||0)-(prev.closedAt||prev.openedAt||0);
-      const gapMin=Math.round(gapMs/60000);
-      const isRevenge=gapMin<=10&&gapMin>=0;
-      gapHtml=`<div class="seq-gap${isRevenge?' revenge':''}">
-        <div class="seq-gap-line"></div>
-        <span>${gapMin<0?'Overlapping trades':(gapMin===0?'Immediate':gapMin+'min later')}${isRevenge?' ⚠ POTENTIAL REVENGE':''}</span>
-        <div class="seq-gap-line"></div>
-      </div>`;
-    }
-    const yourPts=calcYourClosedPts(t);
-    const ctrPts=calcClosedPts(t);
-    html+=gapHtml+`<div class="seq-card ${resultCls}" id="seqcard-${t.id}">
-      <div class="seq-header">
-        <div class="seq-num ${numCls}">${isOrigin?'L':i}</div>
-        <div>
-          <div class="seq-asset">${t.asset} ${isOrigin?'<span style="font-size:9px;color:var(--red)">LOSS THAT TRIGGERED THIS SESSION</span>':''}</div>
-          <div class="seq-meta">${t.date} · ${t.tf} · Conv. ${t.conviction}/5 · ${t.reason}</div>
-        </div>
-        <span class="seq-result-badge ${resBadgeCls}">${resLabel}</span>
-      </div>
-      <div class="market-state-banner msb-unknown" id="msb-${t.id}">
-        <span class="msb-icon">⏳</span>
-        <span class="msb-label">Detecting market state...</span>
-      </div>
-      <div class="seq-chart-tf">
-        <button class="seq-tf-btn active" onclick="setSeqTF('${t.id}','5m',this)">5m</button>
-        <button class="seq-tf-btn" onclick="setSeqTF('${t.id}','15m',this)">15m</button>
-        <button class="seq-tf-btn" onclick="setSeqTF('${t.id}','1H',this)">1H</button>
-      </div>
-      <div class="seq-chart-wrap" id="seqchart-${t.id}"></div>
-      <div class="seq-stats-row">
-        <div class="seq-stat"><div class="seq-stat-label">You Said</div><div class="seq-stat-val" style="color:var(--muted)">${t.youSaid}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Counter</div><div class="seq-stat-val" style="color:var(--red)">${t.counter}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Entry</div><div class="seq-stat-val">${t.entry!=null?fmtP(t.entry,t.sym):'—'}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Exit</div><div class="seq-stat-val">${t.exit!=null?fmtP(t.exit,t.sym):'Open'}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Your P&L</div><div class="seq-stat-val ${yourPts!=null&&yourPts>=0?'cg':yourPts!=null?'cr':''}">${fmtPts(yourPts,t.sym)}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Counter P&L</div><div class="seq-stat-val ${ctrPts!=null&&ctrPts>=0?'cg':ctrPts!=null?'cr':''}">${fmtPts(ctrPts,t.sym)}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Duration</div><div class="seq-stat-val">${durStr(t)}</div></div>
-        <div class="seq-stat"><div class="seq-stat-label">Conviction</div><div class="seq-stat-val cp">${t.conviction}/5</div></div>
-      </div>
-      <div class="seq-insight" id="seqinsight-${t.id}">Loading analysis...</div>
-    </div>`;
-  });
-  main.innerHTML=html;
-
-  // Load charts for each trade in sequence
-  for(const t of fullSeq){
-    await loadSeqChart(t,'5m');
-  }
-}
-
-async function setSeqTF(tradeId,tf,btn){
-  const parent=btn.closest('.seq-card');
-  parent.querySelectorAll('.seq-tf-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const t=trades.find(x=>x.id===tradeId);
-  if(t)await loadSeqChart(t,tf);
-}
-
-// ── MARKET STATE DETECTION ────────────────────────────────────────────────────
-function detectMarketState(candles){
-  if(!candles||candles.length<10)return{state:'unknown',label:'Unknown',desc:'Not enough candle data'};
-  // Use last 20 candles for analysis
-  const recent=candles.slice(-20);
-  const highs=recent.map(c=>c.high);
-  const lows=recent.map(c=>c.low);
-  const closes=recent.map(c=>c.close);
-  // Check for trending: count consecutive HH/HL (uptrend) or LL/LH (downtrend)
-  let hhCount=0,hlCount=0,llCount=0,lhCount=0;
-  for(let i=1;i<recent.length;i++){
-    if(highs[i]>highs[i-1])hhCount++;
-    if(lows[i]>lows[i-1])hlCount++;
-    if(highs[i]<highs[i-1])lhCount++;
-    if(lows[i]<lows[i-1])llCount++;
-  }
-  const upScore=(hhCount+hlCount)/(recent.length*2);
-  const dnScore=(llCount+lhCount)/(recent.length*2);
-  // Range detection: ATR relative to range
-  const totalRange=Math.max(...highs)-Math.min(...lows);
-  const avgCandle=recent.reduce((a,c)=>a+Math.abs(c.close-c.open),0)/recent.length;
-  const choppy=avgCandle/(totalRange||1)<0.15;
-  if(upScore>0.65){return{state:'trending-up',label:'TRENDING ↑',desc:'Consecutive higher highs & higher lows — bullish momentum'};}
-  if(dnScore>0.65){return{state:'trending-dn',label:'TRENDING ↓',desc:'Consecutive lower highs & lower lows — bearish momentum'};}
-  if(choppy||Math.max(upScore,dnScore)<0.5){return{state:'ranging',label:'RANGING ⟺',desc:'Price oscillating without directional conviction — support/resistance zone'};}
-  return{state:'trending-up',label:'WEAK TREND ↑',desc:'Mild directional bias — not confirmed'}; 
-}
-
-function addMarketStateLines(chartInst,series,candles,state){
-  if(!candles||candles.length<5)return;
-  const recent=candles.slice(-20);
-  if(state.state==='ranging'){
-    // Draw range highs and lows as horizontal lines
-    const rangeH=Math.max(...recent.map(c=>c.high));
-    const rangeL=Math.min(...recent.map(c=>c.low));
-    series.createPriceLine({price:rangeH,color:'rgba(255,176,32,0.8)',lineWidth:2,lineStyle:0,title:'Range High'});
-    series.createPriceLine({price:rangeL,color:'rgba(255,176,32,0.8)',lineWidth:2,lineStyle:0,title:'Range Low'});
-  }else if(state.state==='trending-up'||state.state==='trending-dn'){
-    // Draw swing high and swing low trendlines as price lines
-    const last8=recent.slice(-8);
-    const swingH=Math.max(...last8.map(c=>c.high));
-    const swingL=Math.min(...last8.map(c=>c.low));
-    const trendColor=state.state==='trending-up'?'rgba(0,217,139,0.6)':'rgba(255,61,95,0.6)';
-    series.createPriceLine({price:swingH,color:trendColor,lineWidth:1,lineStyle:2,title:state.state==='trending-up'?'Swing High':'Resistance'});
-    series.createPriceLine({price:swingL,color:trendColor,lineWidth:1,lineStyle:2,title:state.state==='trending-up'?'Support':'Swing Low'});
-  }
-}
-
-async function loadSeqChart(t,tf){
-  const container=document.getElementById('seqchart-'+t.id);
-  if(!container)return;
-  // Destroy existing
-  if(plaCharts[t.id]){try{plaCharts[t.id].remove();}catch(e){}delete plaCharts[t.id];}
-  const chart=LightweightCharts.createChart(container,{
-    layout:{background:{type:'solid',color:'#09090f'},textColor:'#6a6a8a'},
-    grid:{vertLines:{color:'#16161f'},horzLines:{color:'#16161f'}},
-    crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
-    rightPriceScale:{borderColor:'#2a2a3a'},
-    timeScale:{borderColor:'#2a2a3a',timeVisible:true,secondsVisible:false},
-    width:container.clientWidth,height:container.clientHeight||260,
-  });
-  plaCharts[t.id]=chart;
-  const series=chart.addCandlestickSeries({
-    upColor:'#00d98b',downColor:'#ff3d5f',
-    borderUpColor:'#00d98b',borderDownColor:'#ff3d5f',
-    wickUpColor:'#00d98b',wickDownColor:'#ff3d5f',
-  });
-  new ResizeObserver(()=>{if(plaCharts[t.id])plaCharts[t.id].applyOptions({width:container.clientWidth,height:container.clientHeight});}).observe(container);
-
-  // Fetch candles
-  const TFI={'1m':'1m','5m':'5m','15m':'15m','1H':'60m'};
-  const TFR={'1m':'7d','5m':'7d','15m':'60d','1H':'730d'};
-  let candles=[];
-  try{
-    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.sym)}?interval=${TFI[tf]||'15m'}&range=${TFR[tf]||'60d'}`;
-    const data=await proxy(url);
-    const result=data?.chart?.result?.[0];
-    if(result){
-      const ts=result.timestamp||[];
-      const q=result.indicators?.quote?.[0]||{};
-      candles=ts.map((time,i)=>{
-        const o=q.open?.[i],h=q.high?.[i],l=q.low?.[i],c=q.close?.[i];
-        if(o==null||h==null||l==null||c==null)return null;
-        return{time,open:+o.toFixed(5),high:+h.toFixed(5),low:+l.toFixed(5),close:+c.toFixed(5)};
-      }).filter(x=>x!=null).sort((a,b)=>a.time-b.time);
-    }
-  }catch(e){}
-  if(!candles.length){candles=buildSyntheticCandles(t,tf);}
-  series.setData(candles);
-
-  // Detect market state
-  const ms=detectMarketState(candles);
-  const msBanner=document.getElementById('msb-'+t.id);
-  if(msBanner){
-    msBanner.className='market-state-banner msb-'+ms.state.replace('-','_').replace('trending_up','trending-up').replace('trending_dn','trending-dn').replace('weak_trend_↑','ranging');
-    const clsMap={'trending-up':'msb-trending-up','trending-dn':'msb-trending-dn','ranging':'msb-ranging'};
-    msBanner.className='market-state-banner '+(clsMap[ms.state]||'msb-unknown');
-    msBanner.innerHTML=`<span class="msb-icon">${ms.state==='trending-up'?'📈':ms.state==='trending-dn'?'📉':'↔'}</span><span class="msb-label">${ms.label}</span><span class="msb-desc">${ms.desc}</span>`;
-  }
-
-  // Add market state lines to chart
-  addMarketStateLines(chart,series,candles,ms);
-
-  // Add trade execution overlays
-  const buf=t.entry*0.0003;
-  const entryTime=t.openedAt?Math.floor(t.openedAt/1000):null;
-  const exitTime=t.closedAt?Math.floor(t.closedAt/1000):null;
-  const markers=[];
-  if(entryTime&&candles.length){
-    const ec=candles.reduce((p,c)=>Math.abs(c.time-entryTime)<Math.abs(p.time-entryTime)?c:p);
-    const isBull=t.youSaid==='BUY'||t.youSaid==='LONG';
-    markers.push({time:ec.time,position:isBull?'belowBar':'aboveBar',color:'#4d9fff',shape:isBull?'arrowUp':'arrowDown',text:'Entry'});
-  }
-  if(exitTime&&t.exit&&candles.length){
-    const ec=candles.reduce((p,c)=>Math.abs(c.time-exitTime)<Math.abs(p.time-exitTime)?c:p);
-    const cwin=calcClosedPts(t)>=0;
-    markers.push({time:ec.time,position:'aboveBar',color:cwin?'#00d98b':'#ff3d5f',shape:'circle',text:cwin?'CTR WIN':'CTR LOSS'});
-  }
-  if(markers.length)series.setMarkers(markers.sort((a,b)=>a.time-b.time));
-  if(t.entry!=null){
-    const addL=(price,color,style,label)=>{if(price!=null)series.createPriceLine({price,color,lineWidth:1,lineStyle:style,title:label});};
-    addL(t.entry,'#4d9fff',2,'Entry');
-    if(t.exit!=null)addL(t.exit,'#c0c0d0',2,'Exit');
-    if(t.tp)addL(t.tp,'#00d98b',1,'TP');
-    if(t.sl)addL(t.sl,'#ff3d5f',1,'SL');
-  }
-  chart.timeScale().fitContent();
-
-  // Generate insight text
-  const insight=document.getElementById('seqinsight-'+t.id);
-  if(insight){
-    const yourPts=calcYourClosedPts(t);
-    const ctrPts=calcClosedPts(t);
-    const isOrigin=t._isOrigin;
-    const parts=[];
-    if(isOrigin){parts.push(`<strong>This is the losing trade that triggered this session.</strong> Analyze what the market was doing when you entered.`);}
-    // Market state insight
-    if(ms.state==='ranging'&&(t.youSaid==='LONG'||t.youSaid==='BUY')){parts.push(`Market was <strong>RANGING</strong> — your BUY entry was into a chop zone. Both directions get punished in ranging markets. The counter SELL was equally risky.`);}
-    else if(ms.state==='trending-dn'&&(t.youSaid==='LONG'||t.youSaid==='BUY')){parts.push(`Market was in a confirmed <strong>DOWNTREND</strong> when you entered LONG. You bought into a down move — the counter SHORT was aligned with the trend.`);}
-    else if(ms.state==='trending-up'&&(t.youSaid==='SHORT'||t.youSaid==='SELL')){parts.push(`Market was in a confirmed <strong>UPTREND</strong> when you entered SHORT. You sold into a rising market — the counter LONG was trend-aligned.`);}
-    else if(ms.state==='ranging'){parts.push(`Market was <strong>RANGING</strong> at this entry. Ranging markets chop both sides — entries made here carry higher false-signal risk.`);}
-    // Conviction insight
-    if(!isOrigin&&t.conviction>=4&&(t.result==='LOSS'||t.result==='SL')){parts.push(`<strong>High conviction (${t.conviction}/5) after a loss — classic emotional escalation.</strong> Your certainty spiked post-loss, a reliable indicator of revenge trading psychology.`);}
-    if(!isOrigin&&t.conviction>=4&&(t.result==='WIN'||t.result==='TP')){parts.push(`High conviction after a loss and the counter won — interesting data point. Your elevated emotional state produced a tradeable signal.`);}
-    // No SL
-    if(!t.sl){parts.push(`No stop loss set on this trade. Post-loss trading without a SL is one of the highest-risk behaviors — unlimited downside with no defined exit.`);}
-    // Summary
-    if(ctrPts!=null){parts.push(`Counter trade result: <strong class="${ctrPts>=0?'cg':'cr'}">${fmtPts(ctrPts,t.sym)}</strong> vs your trade: <strong class="${yourPts!=null&&yourPts>=0?'cg':'cr'}">${fmtPts(yourPts,t.sym)}</strong>.`);}
-    const insightCls=t.result==='LOSS'||t.result==='SL'?'insight-bad':t.result==='WIN'||t.result==='TP'?'insight-good':'insight-warn';
-    insight.className='seq-insight '+insightCls;
-    insight.innerHTML=parts.length?parts.join(' '):'<span style="color:var(--muted)">Open trade — no closing data yet.</span>';
-  }
-}
-
-// Hook into doClose and markSelected to trigger PLA badge on loss
-const _origDoClose=doClose;
-function doClose(){
-  const t=trades.find(x=>x.id===exitId);
-  _origDoClose();
-  const updated=trades.find(x=>x.id===(t?.id));
-  if(updated&&(updated.result==='LOSS'||updated.result==='SL')){triggerPLABadge();}
+function renderTradeStats(t){
+  const yourPts=calcYourClosedPts(t)||(t.result==='OPEN'?calcYourLivePnl(t):null);
+  const counterPts=calcClosedPts(t)||(t.result==='OPEN'?calcLivePnl(t):null);
+  const yourUsd=calcUsd(t,yourPts);
+  const counterUsd=calcUsd(t,counterPts);
+  const rr=calcRR(t);
+  const arr=calcActualRR(t);
+  const yourResult=yourPts!=null?(yourPts>=0?'WIN':'LOSS'):'OPEN';
+  const counterResult=t.result==='OPEN'?'OPEN':t.result;
+  function statItem(label,value,colorClass=''){return`<div class="csg-item"><div class="csg-label">${label}</div><div class="csg-value ${colorClass}">${value}</div></div>`;}
+  document.getElementById('csg-yours').innerHTML=statItem('Direction',t.youSaid,'cw')+statItem('Entry',t.entry!=null?fmtP(t.entry,t.sym):'—')+statItem('Exit',t.exit!=null?fmtP(t.exit,t.sym):t.result==='OPEN'?'Open':'—')+statItem('P&L pts',fmtPts(yourPts,t.sym),yourPts!=null&&yourPts>=0?'cg':yourPts!=null?'cr':'ca')+statItem('P&L $',fmtUsd(yourUsd),yourUsd!=null&&yourUsd>=0?'cg':yourUsd!=null?'cr':'ca')+statItem('Result',yourResult,yourResult==='WIN'?'cg':yourResult==='LOSS'?'cr':'ca')+statItem('Duration',durStr(t))+statItem('R:R Plan',rr||'—','ca');
+  document.getElementById('csg-counter').innerHTML=statItem('Direction',t.counter,'cr')+statItem('Entry',t.entry!=null?fmtP(t.entry,t.sym):'—')+statItem('Exit',t.exit!=null?fmtP(t.exit,t.sym):t.result==='OPEN'?'Open':'—')+statItem('P&L pts',fmtPts(counterPts,t.sym),counterPts!=null&&counterPts>=0?'cg':counterPts!=null?'cr':'ca')+statItem('P&L $',fmtUsd(counterUsd),counterUsd!=null&&counterUsd>=0?'cg':counterUsd!=null?'cr':'ca')+statItem('Result',counterResult,counterResult==='WIN'||counterResult==='TP'?'cg':counterResult==='LOSS'||counterResult==='SL'?'cr':'ca')+statItem('MFE',t.mfe!=null?fmtPts(t.mfe,t.sym):'—','cg')+statItem('MAE',t.mae!=null?fmtPts(t.mae,t.sym):'—','cr')+statItem('R:R Actual',arr||'—',arr&&parseFloat(arr.split(':')[1])>=1?'cg':'cr')+statItem('Conviction',(t.conviction||0)+'/5','cp');
 }
 </script>
 </body>
