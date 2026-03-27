@@ -399,9 +399,17 @@ textarea.minput{resize:none;height:65px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ── WARNING MODAL ── */
-#warn-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-.warn-box{max-width:640px;width:92%;text-align:center;padding:0 20px;position:relative;z-index:100001}
-.warn-btn-yes,.warn-btn-no{position:relative;z-index:100002}
+#warn-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.96);
+  z-index:999999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  isolation:isolate;
+}
+.warn-box{max-width:640px;width:92%;text-align:center;padding:0 20px}
 .warn-ticker-wrap{width:100%;overflow:hidden;background:rgba(255,61,95,.08);border:1px solid rgba(255,61,95,.25);border-radius:6px;padding:10px 0;margin-bottom:36px}
 .warn-ticker-inner{display:inline-flex;white-space:nowrap;animation:warn-scroll 18s linear infinite}
 .warn-ticker-inner:hover{animation-play-state:paused}
@@ -417,9 +425,9 @@ textarea.minput{resize:none;height:65px}
 .warn-divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,61,95,.3),transparent);margin:0 0 28px}
 .warn-confirm-label{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
 .warn-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.warn-btn-yes{background:var(--red);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer;letter-spacing:.05em;transition:all .15s;pointer-events:auto}
+.warn-btn-yes{background:var(--red);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer!important;letter-spacing:.05em;transition:all .15s;pointer-events:all!important;user-select:none;-webkit-tap-highlight-color:transparent}
 .warn-btn-yes:hover{background:#cc2244;transform:scale(1.02)}
-.warn-btn-no{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:14px 28px;cursor:pointer;transition:all .15s;pointer-events:auto}
+.warn-btn-no{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:14px 28px;cursor:pointer!important;transition:all .15s;pointer-events:all!important;user-select:none}
 .warn-btn-no:hover{border-color:var(--muted);color:var(--text)}
 .warn-footer{font-size:9px;color:#3a3a55;margin-top:20px;font-family:var(--mono)}
 
@@ -607,8 +615,8 @@ textarea.minput{resize:none;height:65px}
 
     <div class="warn-confirm-label">Do you understand what this tool is?</div>
     <div class="warn-btns">
-      <button class="warn-btn-yes" onclick="dismissWarning()">I UNDERSTAND — ENTER</button>
-      <button class="warn-btn-no" onclick="redirectOut()">I'm not ready — take me elsewhere</button>
+      <button class="warn-btn-yes" id="btn-warn-yes">I UNDERSTAND — ENTER</button>
+      <button class="warn-btn-no" id="btn-warn-no">I'm not ready — take me elsewhere</button>
     </div>
 
     <div class="warn-footer">By entering you acknowledge this is a counter-trade psychology tool, not financial advice.</div>
@@ -2799,20 +2807,32 @@ function showToast(main,sub){
 // INIT
 // ══════════════════════════════════════════════════════════════════════════════
 // ── WARNING MODAL ────────────────────────────────────────────────────────────
-function dismissWarning(){
-  document.getElementById('warn-overlay').style.display='none';
-  // Remember for this session only — shows again on next visit
-  sessionStorage.setItem('ff_warned','1');
-}
-function redirectOut(){
-  window.location.href='https://z-lib.id/book/options-futures-and-other-derivatives-global-edition-64404';
-}
-// Show warning unless already confirmed this session
-if(!sessionStorage.getItem('ff_warned')){
-  document.getElementById('warn-overlay').style.display='flex';
-}else{
-  document.getElementById('warn-overlay').style.display='none';
-}
+// Warning handled by inline IIFE above
+// Warning modal — attach to DOM elements directly, no inline onclick
+(function(){
+  const overlay=document.getElementById('warn-overlay');
+  const btnYes=document.getElementById('btn-warn-yes');
+  const btnNo=document.getElementById('btn-warn-no');
+  if(btnYes){
+    btnYes.addEventListener('click',function(e){
+      e.stopPropagation();
+      overlay.style.display='none';
+      sessionStorage.setItem('ff_warned','1');
+    });
+  }
+  if(btnNo){
+    btnNo.addEventListener('click',function(e){
+      e.stopPropagation();
+      window.location.href='https://z-lib.id/book/options-futures-and-other-derivatives-global-edition-64404';
+    });
+  }
+  // Show or hide
+  if(!sessionStorage.getItem('ff_warned')){
+    overlay.style.display='flex';
+  }else{
+    overlay.style.display='none';
+  }
+})();
 
 // ── TOOLTIP ENGINE (JS-based, avoids overflow) ────────────────────────────
 const tipBubble=document.getElementById('tip-bubble');
