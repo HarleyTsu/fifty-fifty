@@ -400,7 +400,8 @@ textarea.minput{resize:none;height:65px}
 
 /* ── WARNING MODAL ── */
 #warn-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-.warn-box{max-width:640px;width:92%;text-align:center;padding:0 20px}
+.warn-box{max-width:640px;width:92%;text-align:center;padding:0 20px;position:relative;z-index:100001}
+.warn-btn-yes,.warn-btn-no{position:relative;z-index:100002}
 .warn-ticker-wrap{width:100%;overflow:hidden;background:rgba(255,61,95,.08);border:1px solid rgba(255,61,95,.25);border-radius:6px;padding:10px 0;margin-bottom:36px}
 .warn-ticker-inner{display:inline-flex;white-space:nowrap;animation:warn-scroll 18s linear infinite}
 .warn-ticker-inner:hover{animation-play-state:paused}
@@ -416,9 +417,9 @@ textarea.minput{resize:none;height:65px}
 .warn-divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,61,95,.3),transparent);margin:0 0 28px}
 .warn-confirm-label{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
 .warn-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.warn-btn-yes{background:var(--red);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer;letter-spacing:.05em;transition:all .15s}
+.warn-btn-yes{background:var(--red);border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:14px 36px;cursor:pointer;letter-spacing:.05em;transition:all .15s;pointer-events:auto}
 .warn-btn-yes:hover{background:#cc2244;transform:scale(1.02)}
-.warn-btn-no{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:14px 28px;cursor:pointer;transition:all .15s}
+.warn-btn-no{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:14px 28px;cursor:pointer;transition:all .15s;pointer-events:auto}
 .warn-btn-no:hover{border-color:var(--muted);color:var(--text)}
 .warn-footer{font-size:9px;color:#3a3a55;margin-top:20px;font-family:var(--mono)}
 
@@ -446,7 +447,7 @@ textarea.minput{resize:none;height:65px}
 /* ── TOOLTIPS — uses JS bubble to avoid overflow/overlap ── */
 [data-tip]{cursor:help}
 #tip-bubble{
-  position:fixed;z-index:99998;
+  position:fixed;z-index:9000;
   background:#1a1a2e;border:1px solid var(--border2);color:var(--text);
   font-size:10px;line-height:1.6;padding:7px 11px;border-radius:6px;
   max-width:220px;pointer-events:none;opacity:0;transition:opacity .15s;
